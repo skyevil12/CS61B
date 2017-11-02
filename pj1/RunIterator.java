@@ -36,7 +36,7 @@ public class RunIterator implements Iterator {
    *  Define any variables associated with a RunIterator object here.
    *  These variables MUST be private.
    */
-
+	private SList mColor;
 
 
 
@@ -54,8 +54,10 @@ public class RunIterator implements Iterator {
   // constructor that you want so that your RunLengthEncoding.iterator()
   // implementation can construct a RunIterator that points to the first run of
   // the encoding.
-  RunIterator() {
+  RunIterator(SList color) {
     // Your solution here.  You may add parameters to the method signature.
+	mColor = color;	
+	mColor.resetCurrent();
   }
 
   /**
@@ -66,7 +68,7 @@ public class RunIterator implements Iterator {
    */
   public boolean hasNext() {
     // Replace the following line with your solution.
-    return false;
+    return mColor.hasNext();
   }
 
   /**
@@ -96,7 +98,8 @@ public class RunIterator implements Iterator {
     // call to next() will return the subsequent run.
 
     // Replace the following line with your solution.
-    return new int[4];
+	Run curRun = mColor.goNext();
+    return new int[]{curRun.mLength, curRun.mIntensity_R, curRun.mIntensity_G, curRun.mIntensity_B};
   }
 
   /**

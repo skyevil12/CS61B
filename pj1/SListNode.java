@@ -1,5 +1,5 @@
 class SListNode {
-	Run mElement;
+	private final Run mElement;
 	SListNode mNext;
 	
 	public SListNode(Run element, SListNode next) {
@@ -14,5 +14,9 @@ class SListNode {
 	
 	public void insertAfter(Run item) {
 		mNext = new SListNode(item, mNext);
+	}
+	
+	Run getRunObj() {
+		return mElement;
 	}
 }
