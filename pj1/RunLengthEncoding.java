@@ -130,8 +130,19 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-	// PixImage rtImg = new PixImage(mWidth, mHeight);
-    return ;
+	int curCount = 0;
+	PixImage rtImg = new PixImage(mWidth, mHeight);
+	Run curRun = mColor.goNext();
+	for(int i = 0; i < mWidth; i++) {
+		for(int j = 0; j < mHeight; j++) {
+			if(++curCount > curRun.mLength) {			
+				curRun = mColor.goNext();
+			}			
+			
+			rtImg.setPixel(i, j, curRun.mIntensity_R, curRun.mIntensity_G, curRun.mIntensity_B);
+		}
+	}
+    return rtImg;
   }
 
   /**
