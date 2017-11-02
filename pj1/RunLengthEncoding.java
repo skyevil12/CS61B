@@ -29,7 +29,11 @@ public class RunLengthEncoding implements Iterable {
    *  Define any variables associated with a RunLengthEncoding object here.
    *  These variables MUST be private.
    */
-
+	private SList mColor_R = new SList();
+	private SList mColor_G = new SList(); ;
+	private SList mColor_B = new SList();;
+	private int mWidth;
+	private int mHeight;
 
 
 
@@ -48,6 +52,7 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+	new RunLengthEncoding(width, height, new int[]{0}, new int[]{0}, new int[]{0}, new int[]{width * height});
   }
 
   /**
@@ -74,6 +79,14 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
     // Your solution here.
+	mWidth = width;
+	mHeight = height;
+	
+	for(int i = 0; i < runLengths.length; i++) {
+		mColor_R.insertFront(new Run(red[i], runLengths[i]));
+		mColor_G.insertFront(new Run(green[i], runLengths[i]));
+		mColor_B.insertFront(new Run(blue[i], runLengths[i]));
+	}
   }
 
   /**
@@ -85,7 +98,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return mWidth;
   }
 
   /**
@@ -96,7 +109,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return mHeight;
   }
 
   /**
@@ -108,7 +121,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+    return new RunIterator();
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
   }
