@@ -31,6 +31,6 @@ class SList {
 	}
 	
 	public boolean hasNext() {
-		return !(null == mCurrent.mNext);
+		return !(null == mCurrent);
 	}
 }

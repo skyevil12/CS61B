@@ -80,7 +80,7 @@ public class RunLengthEncoding implements Iterable {
 	mWidth = width;
 	mHeight = height;
 	
-	for(int i = 0; i < runLengths.length; i++) {
+	for(int i = runLengths.length - 1; i >= 0; i--) {
 		mColor.insertFront(new Run((short)red[i], (short)green[i], (short)blue[i], runLengths[i]));
 	}
   }
@@ -132,11 +132,14 @@ public class RunLengthEncoding implements Iterable {
     // Replace the following line with your solution.
 	int curCount = 0;
 	PixImage rtImg = new PixImage(mWidth, mHeight);
+	mColor.resetCurrent();
 	Run curRun = mColor.goNext();
+	int sum = curRun.mLength;
 	for(int i = 0; i < mWidth; i++) {
 		for(int j = 0; j < mHeight; j++) {
-			if(++curCount > curRun.mLength) {			
+			if(++curCount > sum) {	
 				curRun = mColor.goNext();
+				sum += curRun.mLength;
 			}			
 			
 			rtImg.setPixel(i, j, curRun.mIntensity_R, curRun.mIntensity_G, curRun.mIntensity_B);
@@ -176,6 +179,33 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
+	mWidth = image.getWidth();
+	mHeight = image.getHeight();
+	short tmpColor_R = image.getRed(mWidth - 1, mHeight - 1);
+	short tmpColor_G = image.getGreen(mWidth - 1, mHeight - 1);
+	short tmpColor_B = image.getBlue(mWidth - 1, mHeight - 1);
+	int length = 0;
+	
+	for(int i = mWidth - 1; i >= 0; i--) {
+		for(int j = mHeight - 1; j >= 0; j--) {			
+			short cur_R = image.getRed(i, j);
+			short cur_G = image.getGreen(i, j);
+			short cur_B = image.getBlue(i, j);
+			
+			if(tmpColor_R != cur_R) {
+				mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
+				tmpColor_R = cur_R;
+				tmpColor_G = cur_G;
+				tmpColor_B = cur_B;				
+				length = 0;
+			}
+			
+			++length;
+		}
+	}
+	
+	mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
+	
     check();
   }
 
@@ -185,7 +215,44 @@ public class RunLengthEncoding implements Iterable {
    *  all run lengths does not equal the number of pixels in the image.
    */
   public void check() {
+  	System.out.println("Checking...");
     // Your solution here.
+	if(!mColor.hasNext()) {
+		return;
+	}
+	
+	Run cur = mColor.goNext();
+	short tmpR = cur.mIntensity_R, tmpG = cur.mIntensity_G, tmpB = cur.mIntensity_B;
+	if(cur.mLength < 1) {
+		System.out.println("Check fail!! Because a run has a length less than 1.");
+		return;
+	}
+	
+	int sum = cur.mLength;
+	while(mColor.hasNext()) {
+		cur = mColor.goNext();
+		if(tmpR == cur.mIntensity_R ||
+		   tmpG == cur.mIntensity_G ||
+			tmpB == cur.mIntensity_B) {
+			System.out.println("Check fail!! Because two consecutive runs have exactly the same type of contents.");
+			return;
+		} else {	
+			tmpR = cur.mIntensity_R;
+			tmpG = cur.mIntensity_G;
+			tmpB = cur.mIntensity_B;
+		}
+		
+		sum += cur.mLength;
+	}
+	
+	if(mWidth * mHeight != sum) {
+		System.out.println("Check fail!! Because the sum of all the run lengths " + sum + " doesn¡¦t equal the size.");
+		return;
+	}
+	
+	System.out.println("Success!!");
+	mColor.resetCurrent();
+	return;
   }
 
 
