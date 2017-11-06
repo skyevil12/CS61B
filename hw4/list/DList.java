@@ -52,6 +52,11 @@ public class DList {
    */
   public DList() {
     //  Your solution here.
+	// Init sentinel
+	head = new DListNode(null, null, null);
+	head.prev = head;
+	head.next = head;
+	size = 0;
   }
 
   /**
@@ -79,6 +84,10 @@ public class DList {
    */
   public void insertFront(Object item) {
     // Your solution here.
+	DListNode n = newNode(item, head, head.next);
+	head.next.prev = n;
+	head.next = n;
+	size++;
   }
 
   /**
@@ -88,6 +97,10 @@ public class DList {
    */
   public void insertBack(Object item) {
     // Your solution here.
+	DListNode n = newNode(item, head.prev, head);
+	head.prev.next = n;
+	head.prev = n;
+	size++;
   }
 
   /**
@@ -101,6 +114,10 @@ public class DList {
    */
   public DListNode front() {
     // Your solution here.
+	if(head == head.next) {
+		return null;
+	}
+	return head.next;
   }
 
   /**
@@ -114,6 +131,10 @@ public class DList {
    */
   public DListNode back() {
     // Your solution here.
+	if(head == head.next) {
+		return null;
+	}
+	return head.prev;
   }
 
   /**
@@ -128,6 +149,11 @@ public class DList {
    */
   public DListNode next(DListNode node) {
     // Your solution here.
+	if(null == node || head == node.next) {
+		return null;
+	}
+	
+	return node.next;
   }
 
   /**
@@ -142,6 +168,11 @@ public class DList {
    */
   public DListNode prev(DListNode node) {
     // Your solution here.
+	if(null == node || head == node.prev) {
+		return null;
+	}
+	
+	return node.prev;
   }
 
   /**
@@ -153,6 +184,17 @@ public class DList {
    */
   public void insertAfter(Object item, DListNode node) {
     // Your solution here.
+	if(null == node) {
+		return;
+	} else if(node == head.prev) {
+		insertBack(item);
+		return;
+	} else {
+		DListNode n = newNode(item, node, node.next);
+		node.next.prev = n;
+		node.next = n;
+		size++;
+	}
   }
 
   /**
@@ -164,6 +206,17 @@ public class DList {
    */
   public void insertBefore(Object item, DListNode node) {
     // Your solution here.
+	if(null == node) {
+		return;
+	} else if(node == head.next) {
+		insertFront(item);
+		return;
+	} else {
+		DListNode n = newNode(item, node.prev, node);
+		node.prev.next = n;
+		node.prev = n;
+		size++;
+	}
   }
 
   /**
@@ -172,6 +225,25 @@ public class DList {
    */
   public void remove(DListNode node) {
     // Your solution here.
+	if(null == node) {
+		return;
+	}
+	
+	// node is first
+	if(node == head.next) {
+		head.next = node.next;
+		node.next.prev = head;
+	} else if(node == head.prev) {
+	// node is last
+		head.prev = node.prev;
+		node.prev.next = head;
+	} else {
+	// node
+		node.prev.next = node.next;
+		node.next.prev = node.prev;
+	}
+	
+	size--;
   }
 
   /**
@@ -190,5 +262,9 @@ public class DList {
       current = current.next;
     }
     return result + "]";
+  }
+  
+  public static void main(String... args) {
+	
   }
 }
