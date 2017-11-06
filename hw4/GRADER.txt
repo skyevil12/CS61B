@@ -1,0 +1,6 @@
+/*
+1. Call front to get first node
+2. Remove this node
+3. Call insertAfter with removed node would cause crash
+*/ 
+

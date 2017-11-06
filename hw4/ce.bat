@@ -1,2 +1,3 @@
-javac -g list/*.java  
+javac -g list/*.java  *.java
 java list.DList
+java GraderTest

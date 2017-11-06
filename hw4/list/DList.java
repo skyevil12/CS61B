@@ -240,9 +240,11 @@ public class DList {
 	} else {
 	// node
 		node.prev.next = node.next;
-		node.next.prev = node.prev;
+		node.next.prev = node.prev;		
 	}
 	
+	node.prev = null;
+	node.next = null;	
 	size--;
   }
 
