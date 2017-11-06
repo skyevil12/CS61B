@@ -53,7 +53,7 @@ public class DList {
   public DList() {
     //  Your solution here.
 	// Init sentinel
-	head = new DListNode(null, null, null);
+	head = newNode(null, null, null);
 	head.prev = head;
 	head.next = head;
 	size = 0;
