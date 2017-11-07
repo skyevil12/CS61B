@@ -99,7 +99,7 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return (short)mColor_B[x][y];
+    return mColor_B[x][y];
   }
 
   /**

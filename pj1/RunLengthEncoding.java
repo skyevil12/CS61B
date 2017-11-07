@@ -76,6 +76,15 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
+	// Length must >= 1
+	if(0 == red.length || 0 == green.length || 0 == blue.length || 0 == runLengths.length) {
+		throw new IllegalArgumentException("Zero input array!!");
+	}
+	
+	// TODO Pix intensity would be 0-255
+	
+	// TODO Sum should be width * height
+	
     // Your solution here.
 	mWidth = width;
 	mHeight = height;
@@ -132,11 +141,10 @@ public class RunLengthEncoding implements Iterable {
     // Replace the following line with your solution.
 	int curCount = 0;
 	PixImage rtImg = new PixImage(mWidth, mHeight);
-	mColor.resetCurrent();
 	Run curRun = mColor.goNext();
 	int sum = curRun.mLength;
-	for(int i = 0; i < mWidth; i++) {
-		for(int j = 0; j < mHeight; j++) {
+	 for(int j = 0; j < mHeight; j++) {
+		for(int i = 0; i < mWidth; i++) {
 			if(++curCount > sum) {	
 				curRun = mColor.goNext();
 				sum += curRun.mLength;
@@ -145,6 +153,7 @@ public class RunLengthEncoding implements Iterable {
 			rtImg.setPixel(i, j, curRun.mIntensity_R, curRun.mIntensity_G, curRun.mIntensity_B);
 		}
 	}
+	mColor.resetCurrent();
     return rtImg;
   }
 
@@ -158,8 +167,18 @@ public class RunLengthEncoding implements Iterable {
    *  @return a String representation of this RunLengthEncoding.
    */
   public String toString() {
+	StringBuilder colorSb = new StringBuilder();
     // Replace the following line with your solution.
-    return "";
+	while(mColor.hasNext()) {
+		Run run = mColor.goNext();
+		colorSb.append("[").append(run.mLength).append("*")
+			   .append(run.mIntensity_R).append("*")
+			   .append(run.mIntensity_G).append("*")
+			   .append(run.mIntensity_B).append("]");
+	}
+	
+	mColor.resetCurrent();
+    return colorSb.toString();
   }
 
 
@@ -186,8 +205,8 @@ public class RunLengthEncoding implements Iterable {
 	short tmpColor_B = image.getBlue(mWidth - 1, mHeight - 1);
 	int length = 0;
 	
-	for(int i = mWidth - 1; i >= 0; i--) {
-		for(int j = mHeight - 1; j >= 0; j--) {			
+	for(int j = mHeight - 1; j >= 0; j--) {
+		for(int i = mWidth - 1; i >= 0; i--) {			
 			short cur_R = image.getRed(i, j);
 			short cur_G = image.getGreen(i, j);
 			short cur_B = image.getBlue(i, j);
@@ -207,6 +226,7 @@ public class RunLengthEncoding implements Iterable {
 	mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
 	
     check();
+	//System.out.println("WWW" + this);
   }
 
   /**
@@ -225,17 +245,21 @@ public class RunLengthEncoding implements Iterable {
 	short tmpR = cur.mIntensity_R, tmpG = cur.mIntensity_G, tmpB = cur.mIntensity_B;
 	if(cur.mLength < 1) {
 		System.out.println("Check fail!! Because a run has a length less than 1.");
-		return;
+		throw new RuntimeException("Error");
 	}
 	
 	int sum = cur.mLength;
 	while(mColor.hasNext()) {
 		cur = mColor.goNext();
+		if(cur.mLength < 1) {
+			System.out.println("Check fail!! Because a run has a length less than 1.");
+			throw new RuntimeException("Error");
+		}
 		if(tmpR == cur.mIntensity_R ||
 		   tmpG == cur.mIntensity_G ||
 			tmpB == cur.mIntensity_B) {
 			System.out.println("Check fail!! Because two consecutive runs have exactly the same type of contents.");
-			return;
+			throw new RuntimeException("Error");
 		} else {	
 			tmpR = cur.mIntensity_R;
 			tmpG = cur.mIntensity_G;
@@ -247,7 +271,7 @@ public class RunLengthEncoding implements Iterable {
 	
 	if(mWidth * mHeight != sum) {
 		System.out.println("Check fail!! Because the sum of all the run lengths " + sum + " doesn¡¦t equal the size.");
-		return;
+		throw new RuntimeException("Error");
 	}
 	
 	System.out.println("Success!!");
@@ -276,6 +300,28 @@ public class RunLengthEncoding implements Iterable {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here, but you should probably leave the following line
     //   at the end.
+	
+	// var indicator
+	int indicator = 0, curSum = 0, offset = y * mWidth + x;
+	
+	// length: y * mWidth + x
+	while(mColor.hasNext()) {
+		Run run = mColor.goNext();
+		curSum += run.mLength;
+		indicator++;
+		// offset - curSum(prev) = 1 || offset - curSum = 0
+		
+		// offset - (curSum - run.mLength), 1, curSum - offset
+		if(offset <= curSum) {
+			break;
+		}
+	}
+
+	// if gray level is the same, remove this run and recreate with new length
+	
+	// if gray level different -> chnage to two or three runs depends on the position
+	
+	mColor.resetCurrent();
     check();
   }
 

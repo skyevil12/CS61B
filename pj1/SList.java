@@ -3,6 +3,7 @@ import java.util.NoSuchElementException;
 class SList {
 	SListNode mHead;
 	SListNode mCurrent;
+	SListNode mPrev;
 	int mSize;
 	
 	public SList() {
@@ -13,19 +14,26 @@ class SList {
 	//Insert as the beginning
 	public void insertFront(Run item) {
 		mHead = new SListNode(item, mHead);
-		mCurrent = mHead;
+		resetCurrent();
 		mSize++;
 	}
 	
 	public void resetCurrent() {
 		mCurrent = mHead;
+		mPrev = null;
+	}
+	
+	public void insertBeforeCurrent(Run item) {
+		mPrev.mNext = new SListNode(item, mCurrent);
+		mSize++;
 	}
 	
 	public Run goNext() {
 		if(null == mCurrent) {
 				throw new NoSuchElementException("No next run exists!");
 		}
-		Run cur = mCurrent.getRunObj();				
+		Run cur = mCurrent.getRunObj();	
+		mPrev = mCurrent;
 		mCurrent = mCurrent.mNext;
 		return cur;
 	}
