@@ -301,28 +301,78 @@ public class RunLengthEncoding implements Iterable {
     // Your solution here, but you should probably leave the following line
     //   at the end.
 	
-	// var indicator
-	int indicator = 0, curSum = 0, offset = y * mWidth + x;
+	int curSum = 0, offset = y * mWidth + x + 1;
 	
-	// length: y * mWidth + x
 	while(mColor.hasNext()) {
 		Run run = mColor.goNext();
-		curSum += run.mLength;
-		indicator++;
-		// offset - curSum(prev) = 1 || offset - curSum = 0
-		
-		// offset - (curSum - run.mLength), 1, curSum - offset
+		curSum += run.mLength;		
 		if(offset <= curSum) {
+			setPixelUnit(run, offset, curSum, red, green, blue);
 			break;
 		}
 	}
-
-	// if gray level is the same, remove this run and recreate with new length
-	
-	// if gray level different -> chnage to two or three runs depends on the position
 	
 	mColor.resetCurrent();
     check();
+  }
+  
+  private void setPixelUnit(Run run, int offset, int curSum, short red, short green, short blue) {
+	final Run targetRun = new Run(red, green, blue, 1);
+	if(cmpColor(targetRun, run)) {
+		return;
+	}
+	
+	Run prevPrevRun = mColor.getPrevPrevRun();
+	Run curRun = mColor.getCurrentRun();
+	boolean isSameAsPrevPrev = cmpColor(targetRun, prevPrevRun);
+	
+	if(1 == run.mLength) {		
+		if(cmpColor(targetRun, prevPrevRun)) {
+			mColor.increasePrevPrevLen();
+		} else if(cmpColor(targetRun, curRun)) {
+			mColor.increaseCurLen();
+		} else {
+			mColor.togglePrev(new Run(red, green, blue, 1));
+		}		
+	} else if(2 == run.mLength) {
+		if(offset == (curSum - run.mLength + 1) && cmpColor(targetRun, prevPrevRun)) {
+			mColor.increasePrevPrevLen();
+		} else if(offset == curSum && cmpColor(targetRun, curRun)) {
+			mColor.increaseCurLen();
+		} else if(offset == (curSum - run.mLength + 1) && !cmpColor(targetRun, prevPrevRun)) {
+			mColor.togglePrev(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
+		} else if(offset == curSum && !cmpColor(targetRun, curRun)) {
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
+			mColor.insertBeforeCurrent(targetRun);
+		}
+	} else {
+		// >=2
+		if(offset == (curSum - run.mLength + 1) && cmpColor(targetRun, prevPrevRun)) {
+			mColor.increasePrevPrevLen();
+		} else if(offset == curSum && cmpColor(targetRun, curRun)) {
+			mColor.increaseCurLen();
+		} else if(offset == (curSum - run.mLength + 1) && !cmpColor(targetRun, prevPrevRun)) {
+			mColor.togglePrev(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
+		} else if(offset == curSum && !cmpColor(targetRun, curRun)) {
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
+			mColor.insertBeforeCurrent(targetRun);
+		} else if(offset != (curSum - run.mLength + 1) && offset != curSum) {
+			// Split to three run
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, offset - (curSum - run.mLength) - 1));
+			mColor.insertBeforeCurrent(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, curSum - offset);
+		}
+	}
+  }
+  
+  //private void split
+  
+  private boolean cmpColor(Run target, Run reference) {
+	return (target.mIntensity_R == reference.mIntensity_R &&
+	   target.mIntensity_G == reference.mIntensity_G &&
+	   target.mIntensity_B == reference.mIntensity_B);
   }
 
 

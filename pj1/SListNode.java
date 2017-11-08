@@ -1,5 +1,5 @@
 class SListNode {
-	private final Run mElement;
+	private Run mElement;
 	SListNode mNext;
 	
 	public SListNode(Run element, SListNode next) {
@@ -18,5 +18,9 @@ class SListNode {
 	
 	Run getRunObj() {
 		return mElement;
+	}
+	
+	void toggleRunObj(Run newRun) {
+		mElement = newRun;
 	}
 }
