@@ -367,7 +367,7 @@ public class RunLengthEncoding implements Iterable {
 			// Split to three run
 			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, offset - (curSum - run.mLength) - 1));
 			mColor.insertBeforeCurrent(targetRun);
-			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, curSum - offset);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, curSum - offset));
 		}
 	}
   }

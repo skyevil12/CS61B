@@ -71,8 +71,8 @@ class SList {
 		mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
 		
 		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
-		mPrev.next = null;
-		mPrevPrev.next = mCurrent();		
+		mPrev.mNext = null;
+		mPrevPrev.mNext = mCurrent;		
 	}
 	
 	public void increaseCurLen() {
@@ -80,8 +80,8 @@ class SList {
 		mCurrent.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
 		
 		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
-		mPrev.next = null;
-		mPrevPrev.next = mCurrent();
+		mPrev.mNext = null;
+		mPrevPrev.mNext = mCurrent;
 	}
 	
 	public boolean hasNext() {
