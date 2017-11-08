@@ -55,33 +55,58 @@ class SList {
 	}
 	
 	public Run getCurrentRun() {
-		return mCurrent.getRunObj();
+		return null == mCurrent ? null : mCurrent.getRunObj();
 	}
 	
 	public Run getPrevRun() {
-		return mPrev.getRunObj();
+		return null == mPrev ? null : mPrev.getRunObj();
 	}
 	
 	public Run getPrevPrevRun() {
-		return mPrevPrev.getRunObj();
+		return null == mPrevPrev ? null : mPrevPrev.getRunObj();
 	}
 	
 	public void increasePrevPrevLen() {
 		Run oldOne = mPrevPrev.getRunObj();
-		mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
+		Run curOne = mCurrent.getRunObj();
 		
-		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
-		mPrev.mNext = null;
-		mPrevPrev.mNext = mCurrent;		
+		if(cmpColor(oldOne, curOne)) {
+			//Fix prev and current the same color issue
+			mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1 + curOne.mLength));
+			mPrev.mNext = null;
+			mPrevPrev.mNext = mCurrent.mNext;
+			mCurrent.mNext = null;
+		} else {
+			mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
+			
+			//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
+			mPrev.mNext = null;
+			mPrevPrev.mNext = mCurrent;		
+		}
+	}
+	
+	private boolean cmpColor(Run target, Run reference) {
+		return (target.mIntensity_R == reference.mIntensity_R &&
+		   target.mIntensity_G == reference.mIntensity_G &&
+		   target.mIntensity_B == reference.mIntensity_B);
 	}
 	
 	public void increaseCurLen() {
+		Run prevPrevOne = mPrevPrev.getRunObj();
 		Run oldOne = mCurrent.getRunObj();
-		mCurrent.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
-		
-		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
-		mPrev.mNext = null;
-		mPrevPrev.mNext = mCurrent;
+		if(cmpColor(oldOne, prevPrevOne)) {
+			//Fix prev and current the same color issue
+			mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, prevPrevOne.mLength + 1 + oldOne.mLength));
+			mPrev.mNext = null;
+			mPrevPrev.mNext = mCurrent.mNext;
+			mCurrent.mNext = null;
+		} else {		
+			mCurrent.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
+			
+			//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
+			mPrev.mNext = null;
+			mPrevPrev.mNext = mCurrent;
+		}			
 	}
 	
 	public boolean hasNext() {

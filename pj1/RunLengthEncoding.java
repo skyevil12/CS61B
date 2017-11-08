@@ -143,8 +143,8 @@ public class RunLengthEncoding implements Iterable {
 	PixImage rtImg = new PixImage(mWidth, mHeight);
 	Run curRun = mColor.goNext();
 	int sum = curRun.mLength;
-	 for(int j = 0; j < mHeight; j++) {
-		for(int i = 0; i < mWidth; i++) {
+	for(int i = 0; i < mWidth; i++) {
+		for(int j = 0; j < mHeight; j++) {
 			if(++curCount > sum) {	
 				curRun = mColor.goNext();
 				sum += curRun.mLength;
@@ -205,11 +205,12 @@ public class RunLengthEncoding implements Iterable {
 	short tmpColor_B = image.getBlue(mWidth - 1, mHeight - 1);
 	int length = 0;
 	
-	for(int j = mHeight - 1; j >= 0; j--) {
-		for(int i = mWidth - 1; i >= 0; i--) {			
+	for(int i = mWidth - 1; i >= 0; i--) {
+		for(int j = mHeight - 1; j >= 0; j--) {
 			short cur_R = image.getRed(i, j);
 			short cur_G = image.getGreen(i, j);
 			short cur_B = image.getBlue(i, j);
+			//System.out.println("i = " + i + " j = " + j + " cur_R = "+  cur_R);
 			
 			if(tmpColor_R != cur_R) {
 				mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
@@ -226,7 +227,6 @@ public class RunLengthEncoding implements Iterable {
 	mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
 	
     check();
-	//System.out.println("WWW" + this);
   }
 
   /**
@@ -301,7 +301,9 @@ public class RunLengthEncoding implements Iterable {
     // Your solution here, but you should probably leave the following line
     //   at the end.
 	
-	int curSum = 0, offset = y * mWidth + x + 1;
+	int curSum = 0, offset = x * mHeight + y + 1;
+	
+	System.out.println("Debug ++" + this);
 	
 	while(mColor.hasNext()) {
 		Run run = mColor.goNext();
@@ -313,6 +315,7 @@ public class RunLengthEncoding implements Iterable {
 	}
 	
 	mColor.resetCurrent();
+	System.out.println("Debug --" + this);
     check();
   }
   
@@ -333,38 +336,50 @@ public class RunLengthEncoding implements Iterable {
 	
 	if(1 == run.mLength) {		
 		if(isSameAsPrevPrev) {
+			//System.out.println("0");
 			mColor.increasePrevPrevLen();
 		} else if(isSameAsCur) {
+			//System.out.println("1");
 			mColor.increaseCurLen();
 		} else {
+			//System.out.println("2");
 			mColor.togglePrev(targetRun);
 		}		
 	} else if(2 == run.mLength) {
 		if(isHead && isSameAsPrevPrev) {
+			//System.out.println("3");
 			mColor.increasePrevPrevLen();
 		} else if(isTail && isSameAsCur) {
+			//System.out.println("4");
 			mColor.increaseCurLen();
 		} else if(isHead && !isSameAsPrevPrev) {
+			//System.out.println("5");
 			mColor.togglePrev(targetRun);
 			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
 		} else if(isTail && !isSameAsCur) {
+			//System.out.println("6");
 			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
 			mColor.insertBeforeCurrent(targetRun);
 		}
 	} else {
 		// >=2
 		if(isHead && isSameAsPrevPrev) {
+			//System.out.println("7");
 			mColor.increasePrevPrevLen();
 		} else if(isTail && isSameAsCur) {
+			//System.out.println("8");
 			mColor.increaseCurLen();
 		} else if(isHead && !isSameAsPrevPrev) {
+			//System.out.println("9");
 			mColor.togglePrev(targetRun);
 			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
 		} else if(isTail && !isSameAsCur) {
+			//System.out.println("10");
 			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
 			mColor.insertBeforeCurrent(targetRun);
 		} else if(!isHead && !isTail) {
 			// Split to three run
+			//System.out.println("11");
 			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, offset - (curSum - run.mLength) - 1));
 			mColor.insertBeforeCurrent(targetRun);
 			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, curSum - offset));
