@@ -69,11 +69,19 @@ class SList {
 	public void increasePrevPrevLen() {
 		Run oldOne = mPrevPrev.getRunObj();
 		mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
+		
+		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
+		mPrev.next = null;
+		mPrevPrev.next = mCurrent();		
 	}
 	
 	public void increaseCurLen() {
 		Run oldOne = mCurrent.getRunObj();
 		mCurrent.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1));
+		
+		//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
+		mPrev.next = null;
+		mPrevPrev.next = mCurrent();
 	}
 	
 	public boolean hasNext() {
