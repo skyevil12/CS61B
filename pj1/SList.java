@@ -68,9 +68,12 @@ class SList {
 	
 	public void increasePrevPrevLen() {
 		Run oldOne = mPrevPrev.getRunObj();
-		Run curOne = mCurrent.getRunObj();
+		Run curOne = null;
+		if(null != mCurrent) {
+			curOne = mCurrent.getRunObj();
+		}
 		
-		if(cmpColor(oldOne, curOne)) {
+		if(null != curOne && cmpColor(oldOne, curOne)) {
 			//Fix prev and current the same color issue
 			mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, oldOne.mLength + 1 + curOne.mLength));
 			mPrev.mNext = null;
@@ -92,9 +95,12 @@ class SList {
 	}
 	
 	public void increaseCurLen() {
-		Run prevPrevOne = mPrevPrev.getRunObj();
+		Run prevPrevOne = null;
+		if(null != mPrevPrev) {
+			prevPrevOne = mPrevPrev.getRunObj();
+		}
 		Run oldOne = mCurrent.getRunObj();
-		if(cmpColor(oldOne, prevPrevOne)) {
+		if(null != prevPrevOne && cmpColor(oldOne, prevPrevOne)) {
 			//Fix prev and current the same color issue
 			mPrevPrev.toggleRunObj(new Run(oldOne.mIntensity_R, oldOne.mIntensity_G, oldOne.mIntensity_B, prevPrevOne.mLength + 1 + oldOne.mLength));
 			mPrev.mNext = null;
@@ -105,7 +111,12 @@ class SList {
 			
 			//Remove prev node regardless the mPrev, mPrevPrev and mPrevPrevPrev
 			mPrev.mNext = null;
-			mPrevPrev.mNext = mCurrent;
+			if(null != mPrevPrev) {
+				mPrevPrev.mNext = mCurrent;
+			} else if(mPrev == mHead) {
+				mHead = mCurrent;
+				mPrev = null;
+			}
 		}			
 	}
 	

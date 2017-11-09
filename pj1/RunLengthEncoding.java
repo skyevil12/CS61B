@@ -143,8 +143,8 @@ public class RunLengthEncoding implements Iterable {
 	PixImage rtImg = new PixImage(mWidth, mHeight);
 	Run curRun = mColor.goNext();
 	int sum = curRun.mLength;
-	for(int i = 0; i < mWidth; i++) {
-		for(int j = 0; j < mHeight; j++) {
+	for(int j = 0; j < mHeight; j++) {
+		for(int i = 0; i < mWidth; i++) {
 			if(++curCount > sum) {	
 				curRun = mColor.goNext();
 				sum += curRun.mLength;
@@ -205,8 +205,8 @@ public class RunLengthEncoding implements Iterable {
 	short tmpColor_B = image.getBlue(mWidth - 1, mHeight - 1);
 	int length = 0;
 	
-	for(int i = mWidth - 1; i >= 0; i--) {
-		for(int j = mHeight - 1; j >= 0; j--) {
+	for(int j = mHeight - 1; j >= 0; j--) {
+		for(int i = mWidth - 1; i >= 0; i--) {
 			short cur_R = image.getRed(i, j);
 			short cur_G = image.getGreen(i, j);
 			short cur_B = image.getBlue(i, j);
@@ -301,7 +301,7 @@ public class RunLengthEncoding implements Iterable {
     // Your solution here, but you should probably leave the following line
     //   at the end.
 	
-	int curSum = 0, offset = x * mHeight + y + 1;
+	int curSum = 0, offset = y * mWidth + x + 1;
 	
 	System.out.println("Debug ++" + this);
 	
