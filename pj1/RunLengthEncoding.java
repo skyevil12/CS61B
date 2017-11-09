@@ -29,7 +29,9 @@ public class RunLengthEncoding implements Iterable {
    *  Define any variables associated with a RunLengthEncoding object here.
    *  These variables MUST be private.
    */
-
+	private SList mColor = new SList();
+	private int mWidth;
+	private int mHeight;
 
 
 
@@ -48,6 +50,7 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+	new RunLengthEncoding(width, height, new int[]{0}, new int[]{0}, new int[]{0}, new int[]{width * height});
   }
 
   /**
@@ -73,7 +76,22 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
+	// Length must >= 1
+	if(0 == red.length || 0 == green.length || 0 == blue.length || 0 == runLengths.length) {
+		throw new IllegalArgumentException("Zero input array!!");
+	}
+	
+	// TODO Pix intensity would be 0-255
+	
+	// TODO Sum should be width * height
+	
     // Your solution here.
+	mWidth = width;
+	mHeight = height;
+	
+	for(int i = runLengths.length - 1; i >= 0; i--) {
+		mColor.insertFront(new Run((short)red[i], (short)green[i], (short)blue[i], runLengths[i]));
+	}
   }
 
   /**
@@ -85,7 +103,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return mWidth;
   }
 
   /**
@@ -96,7 +114,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return mHeight;
   }
 
   /**
@@ -108,7 +126,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+    return new RunIterator(mColor);
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
   }
@@ -121,7 +139,22 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-    return new PixImage(1, 1);
+	int curCount = 0;
+	PixImage rtImg = new PixImage(mWidth, mHeight);
+	Run curRun = mColor.goNext();
+	int sum = curRun.mLength;
+	for(int j = 0; j < mHeight; j++) {
+		for(int i = 0; i < mWidth; i++) {
+			if(++curCount > sum) {	
+				curRun = mColor.goNext();
+				sum += curRun.mLength;
+			}			
+			
+			rtImg.setPixel(i, j, curRun.mIntensity_R, curRun.mIntensity_G, curRun.mIntensity_B);
+		}
+	}
+	mColor.resetCurrent();
+    return rtImg;
   }
 
   /**
@@ -134,8 +167,18 @@ public class RunLengthEncoding implements Iterable {
    *  @return a String representation of this RunLengthEncoding.
    */
   public String toString() {
+	StringBuilder colorSb = new StringBuilder();
     // Replace the following line with your solution.
-    return "";
+	while(mColor.hasNext()) {
+		Run run = mColor.goNext();
+		colorSb.append("[").append(run.mLength).append("*")
+			   .append(run.mIntensity_R).append("*")
+			   .append(run.mIntensity_G).append("*")
+			   .append(run.mIntensity_B).append("]");
+	}
+	
+	mColor.resetCurrent();
+    return colorSb.toString();
   }
 
 
@@ -155,6 +198,34 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
+	mWidth = image.getWidth();
+	mHeight = image.getHeight();
+	short tmpColor_R = image.getRed(mWidth - 1, mHeight - 1);
+	short tmpColor_G = image.getGreen(mWidth - 1, mHeight - 1);
+	short tmpColor_B = image.getBlue(mWidth - 1, mHeight - 1);
+	int length = 0;
+	
+	for(int j = mHeight - 1; j >= 0; j--) {
+		for(int i = mWidth - 1; i >= 0; i--) {
+			short cur_R = image.getRed(i, j);
+			short cur_G = image.getGreen(i, j);
+			short cur_B = image.getBlue(i, j);
+			//System.out.println("i = " + i + " j = " + j + " cur_R = "+  cur_R);
+			
+			if(tmpColor_R != cur_R) {
+				mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
+				tmpColor_R = cur_R;
+				tmpColor_G = cur_G;
+				tmpColor_B = cur_B;				
+				length = 0;
+			}
+			
+			++length;
+		}
+	}
+	
+	mColor.insertFront(new Run(tmpColor_R, tmpColor_G, tmpColor_B, length));
+	
     check();
   }
 
@@ -164,7 +235,48 @@ public class RunLengthEncoding implements Iterable {
    *  all run lengths does not equal the number of pixels in the image.
    */
   public void check() {
+  	System.out.println("Checking...");
     // Your solution here.
+	if(!mColor.hasNext()) {
+		return;
+	}
+	
+	Run cur = mColor.goNext();
+	short tmpR = cur.mIntensity_R, tmpG = cur.mIntensity_G, tmpB = cur.mIntensity_B;
+	if(cur.mLength < 1) {
+		System.out.println("Check fail!! Because a run has a length less than 1.");
+		throw new RuntimeException("Error");
+	}
+	
+	int sum = cur.mLength;
+	while(mColor.hasNext()) {
+		cur = mColor.goNext();
+		if(cur.mLength < 1) {
+			System.out.println("Check fail!! Because a run has a length less than 1.");
+			throw new RuntimeException("Error");
+		}
+		if(tmpR == cur.mIntensity_R ||
+		   tmpG == cur.mIntensity_G ||
+			tmpB == cur.mIntensity_B) {
+			System.out.println("Check fail!! Because two consecutive runs have exactly the same type of contents.");
+			throw new RuntimeException("Error");
+		} else {	
+			tmpR = cur.mIntensity_R;
+			tmpG = cur.mIntensity_G;
+			tmpB = cur.mIntensity_B;
+		}
+		
+		sum += cur.mLength;
+	}
+	
+	if(mWidth * mHeight != sum) {
+		System.out.println("Check fail!! Because the sum of all the run lengths " + sum + " doesn¡¦t equal the size.");
+		throw new RuntimeException("Error");
+	}
+	
+	System.out.println("Success!!");
+	mColor.resetCurrent();
+	return;
   }
 
 
@@ -188,7 +300,99 @@ public class RunLengthEncoding implements Iterable {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here, but you should probably leave the following line
     //   at the end.
+	
+	int curSum = 0, offset = y * mWidth + x + 1;
+	
+	System.out.println("Debug ++" + this);
+	
+	while(mColor.hasNext()) {
+		Run run = mColor.goNext();
+		curSum += run.mLength;		
+		if(offset <= curSum) {
+			setPixelUnit(run, offset, curSum, red, green, blue);
+			break;
+		}
+	}
+	
+	mColor.resetCurrent();
+	System.out.println("Debug --" + this);
     check();
+  }
+  
+  private void setPixelUnit(Run run, int offset, int curSum, short red, short green, short blue) {
+	final Run targetRun = new Run(red, green, blue, 1);
+	if(cmpColor(targetRun, run)) {
+		return;
+	}
+	
+	Run prevPrevRun = mColor.getPrevPrevRun();
+	Run curRun = mColor.getCurrentRun();
+	//False if null == prevPrevRun or different
+	boolean isSameAsPrevPrev = (null != prevPrevRun) && cmpColor(targetRun, prevPrevRun);
+	//False if null == curRun or different
+	boolean isSameAsCur = (null != curRun) && cmpColor(targetRun, curRun);
+	boolean isHead = (offset == (curSum - run.mLength + 1));
+	boolean isTail = (offset == curSum);
+	
+	if(1 == run.mLength) {		
+		if(isSameAsPrevPrev) {
+			//System.out.println("0");
+			mColor.increasePrevPrevLen();
+		} else if(isSameAsCur) {
+			//System.out.println("1");
+			mColor.increaseCurLen();
+		} else {
+			//System.out.println("2");
+			mColor.togglePrev(targetRun);
+		}		
+	} else if(2 == run.mLength) {
+		if(isHead && isSameAsPrevPrev) {
+			//System.out.println("3");
+			mColor.increasePrevPrevLen();
+		} else if(isTail && isSameAsCur) {
+			//System.out.println("4");
+			mColor.increaseCurLen();
+		} else if(isHead && !isSameAsPrevPrev) {
+			//System.out.println("5");
+			mColor.togglePrev(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
+		} else if(isTail && !isSameAsCur) {
+			//System.out.println("6");
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, 1));
+			mColor.insertBeforeCurrent(targetRun);
+		}
+	} else {
+		// >=2
+		if(isHead && isSameAsPrevPrev) {
+			//System.out.println("7");
+			mColor.increasePrevPrevLen();
+		} else if(isTail && isSameAsCur) {
+			//System.out.println("8");
+			mColor.increaseCurLen();
+		} else if(isHead && !isSameAsPrevPrev) {
+			//System.out.println("9");
+			mColor.togglePrev(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
+		} else if(isTail && !isSameAsCur) {
+			//System.out.println("10");
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, run.mLength - 1));
+			mColor.insertBeforeCurrent(targetRun);
+		} else if(!isHead && !isTail) {
+			// Split to three run
+			//System.out.println("11");
+			mColor.togglePrev(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, offset - (curSum - run.mLength) - 1));
+			mColor.insertBeforeCurrent(targetRun);
+			mColor.insertBeforeCurrent(new Run(run.mIntensity_R, run.mIntensity_G, run.mIntensity_B, curSum - offset));
+		}
+	}
+  }
+  
+  //private void split
+  
+  private boolean cmpColor(Run target, Run reference) {
+	return (target.mIntensity_R == reference.mIntensity_R &&
+	   target.mIntensity_G == reference.mIntensity_G &&
+	   target.mIntensity_B == reference.mIntensity_B);
   }
 
 

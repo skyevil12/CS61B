@@ -99,7 +99,7 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return (short)mColor_B[x][y];
+    return mColor_B[x][y];
   }
 
   /**
@@ -134,6 +134,13 @@ public class PixImage {
   public String toString() {
     // Replace the following line with your solution.
 	StringBuilder debugMsgSb = new StringBuilder();
+	debugMsgSb.append("[");
+	for(int i = 0; i < mWidth; i++) {
+		for(int j = 0; j < mHeight; j ++) {
+			debugMsgSb.append(",").append(mColor_R[i][j]);
+		}
+	}
+	debugMsgSb.append("]");
     return debugMsgSb.append("Width is ").append(mWidth).append(" Height is ").append(mHeight).toString();
   }
 
@@ -427,6 +434,7 @@ public class PixImage {
         if (! (getRed(x, y) == image.getRed(x, y) &&
                getGreen(x, y) == image.getGreen(x, y) &&
                getBlue(x, y) == image.getBlue(x, y))) {
+			   //System.out.println("this  = " + this + " **** image " + image);
           return false;
         }
       }
