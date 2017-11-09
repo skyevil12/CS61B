@@ -11,6 +11,7 @@
 public class SList {
 
   private SListNode head;
+  private SListNode tail;
   private int size;
 
   /**
@@ -20,6 +21,7 @@ public class SList {
   public SList() {
     size = 0;
     head = null;
+	tail = null;
   }
 
   /**
@@ -46,7 +48,12 @@ public class SList {
    **/
 
   public void insertFront(Object obj) {
-    head = new SListNode(obj, head);
+	SListNode newNode = new SListNode(obj, head);
+	if(isEmpty()) {
+		tail = newNode;
+	}
+	
+    head = newNode;
     size++;
   }
 
@@ -54,16 +61,16 @@ public class SList {
    *  insertEnd() inserts item "obj" at the end of this list.
    *  @param obj the item to be inserted.
    **/
-
+  // Add tail member field and update field in insertFront and insertEnd could make this procedure execute in constant
   public void insertEnd(Object obj) {
     if (head == null) {
-      head = new SListNode(obj);
-    } else {
-      SListNode node = head;
-      while (node.next != null) {
-        node = node.next;
-      }
-      node.next = new SListNode(obj);
+	  SListNode newNode = new SListNode(obj);
+      head = newNode;
+	  tail = newNode;
+    } else {      
+	  SListNode newNode = new SListNode(obj);
+      tail.next = newNode;
+	  tail = newNode;
     }
     size++;
   }
@@ -128,8 +135,21 @@ public class SList {
     testEmpty();
     testAfterInsertFront();
     testAfterInsertEnd();
-  }
-
+	
+	int[] testIntArray = {6, 9, 12};
+	SList list = new SList();
+	for(int i = testIntArray.length - 1; i >=0; i--){
+		list.insertFront(testIntArray[i]);
+	}
+	
+	System.out.println(list);
+	
+	list.insertFront(3);
+	list.insertEnd(15);
+	
+	System.out.println(list);
+	
+  }  
     
   /**
    *  testEmpty() tests toString(), isEmpty(), length(), insertFront(), and
