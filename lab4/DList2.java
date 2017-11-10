@@ -75,6 +75,16 @@ public class DList2 {
    */
   public void insertFront(int i) {
     // Your solution here.
+	DListNode2 oldFront = head.next;
+	DListNode2 newFront = new DListNode2(i);
+
+	// workable even if empty case(head.next == head && head.prev == head)
+	oldFront.prev = newFront;
+	newFront.next = oldFront;
+
+	newFront.prev = head;
+	head.next = newFront;
+	size++;
   }
 
   /**
@@ -83,6 +93,17 @@ public class DList2 {
    */
   public void removeFront() {
     // Your solution here.
+	if(head == head.next && head == head.prev) {
+		return;
+	}
+
+	DListNode2 oldFront = head.next;
+	DListNode2 newFront = oldFront.next;
+	head.next = newFront;
+	newFront.prev = head;
+	oldFront.prev = null;
+	oldFront.next = null;
+	size--;
   }
 
   /**
