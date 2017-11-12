@@ -17,25 +17,37 @@ public class BankApp {
     usage();
     BankApp bankApp = new BankApp();
 
-    String command = bankApp.readLine("--> ");
+    String command = null;
+	try {
+		command = bankApp.readLine("--> ");
+	} catch(IOException e) {
+		System.err.println(e);
+	}
+	
     while (!command.equals("quit")) {
       try {
-	if (command.equals("open")) {
-	  bankApp.open();
-	} else if (command.equals("deposit")) {
-	  bankApp.doDeposit();
-	} else if (command.equals("withdraw")) {
-	  bankApp.doWithdraw();
-	} else if (command.equals("inquire")) {
-	  bankApp.doInquire();
-	} else {
-	  System.err.println("Invalid command: " + command);
-	  usage();
-	}
+		if (command.equals("open")) {
+		  bankApp.open();
+		} else if (command.equals("deposit")) {
+		  bankApp.doDeposit();
+		} else if (command.equals("withdraw")) {
+		  bankApp.doWithdraw();
+		} else if (command.equals("inquire")) {
+		  bankApp.doInquire();
+		} else {
+		  System.err.println("Invalid command: " + command);
+		  usage();
+		}
+		
+		command = bankApp.readLine("--> ");
       } catch(IOException e) {
-	System.err.println(e);
-      }
-      command = bankApp.readLine("--> ");
+		System.err.println(e);
+      } catch(BadAccountException e) {
+		System.out.println("Error:  Couldn't find account number '" +
+                          bankApp.acct + "'" );
+	  } catch(BadTransactionException e) {
+		System.out.println(e.getMessage());
+	  }
     }
   }
 
@@ -55,17 +67,19 @@ public class BankApp {
     System.out.println(name + ", your new account number is: " + newNum);
     System.out.println("Thanks for opening an account with us!");
   }
+  
+  private int acct = 0;
 
  /**
   *  doDeposit() prompts the user for an account number and tries to perform a 
   *  deposit transaction on that account. 
   *  @exception IOException if there are problems reading user input.
   */
-  private void doDeposit() throws IOException {
+  private void doDeposit() throws IOException, BadAccountException, BadTransactionException {
     // Get account number.
     int acctNumber = readInt("Enter account number: ");
     int amount = readInt("Enter amount to deposit: ");
-
+	acct = acctNumber;
     ATM.deposit(acctNumber, amount);
     System.out.println("New balance for #" + acctNumber + " is " +
                        ATM.balanceInquiry(acctNumber));
@@ -76,11 +90,12 @@ public class BankApp {
    *  to perform a withdrawal transaction from that account.
    *  @exception IOException if there are problems reading user input.
    */
-  private void doWithdraw() throws IOException {
+  private void doWithdraw() throws IOException, BadAccountException, BadTransactionException {
     // Get account number.
     int acctNumber = readInt("Enter account number: ");
+	// partI, the withdraw number must be positive
     int amount = readInt("Enter amount to withdraw: ");
-
+	acct = acctNumber;
     ATM.withdraw(acctNumber, amount);
     System.out.println("New balance for #" + acctNumber + " is " +
                        ATM.balanceInquiry(acctNumber));
@@ -91,9 +106,9 @@ public class BankApp {
    *  discover and print that account's balance.
    *  @exception IOException if there are problems reading user input.
    */
-  private void doInquire() throws IOException {
+  private void doInquire() throws IOException, BadAccountException {
     int acctNumber = readInt("Enter account number: ");
-
+	acct = acctNumber;
     System.out.println("Balance for #" + acctNumber + " is " +
                        ATM.balanceInquiry(acctNumber));
   }

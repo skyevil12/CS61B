@@ -53,22 +53,27 @@ public class AccountData implements Keyable {
   /** 
    *  withdraw() reduces the balance by the withdrawal amount "amt".
    **/
-  public void withdraw(int amt) {
-    if (amt <= balance) {
+  public void withdraw(int amt) throws BadTransactionException {
+    if (amt <= 0) {
+	  System.out.println("Error:  Tried to withdraw less than 0: " + amt);
+	  throw new BadTransactionException();
+	} else if(amt <= balance) {
       balance = balance - amt;
     } else {
       System.out.println("Error:  Insufficient funds: " + amt);
+	  throw new BadTransactionException();
     }
   }
 
   /**
    *  deposit() deposits "amt" dollars into this account.
    **/
-  public void deposit(int amt) {
+  public void deposit(int amt) throws BadTransactionException {
     if (amt >= 0) {
       balance = balance + amt;
     } else {
       System.out.println("Error:  Tried to deposit less than 0: " + amt);
+	  throw new BadTransactionException();
     }
   }
 
