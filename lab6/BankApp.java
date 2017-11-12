@@ -38,7 +38,7 @@ public class BankApp {
 		  System.err.println("Invalid command: " + command);
 		  usage();
 		}
-		
+		//This is the answer of Extra Q
 		command = bankApp.readLine("--> ");
       } catch(IOException e) {
 		System.err.println(e);
