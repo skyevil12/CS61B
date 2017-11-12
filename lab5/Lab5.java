@@ -57,7 +57,7 @@ class Y extends X implements CopyCat {
 		y.superSameMethod();
 		//X x = new X();
 		//((Y)x).sameMethod();
-		//System.out.println(X.WINSTON);
+		System.out.println(((X)y).WINSTON);
 	}
 }
 
