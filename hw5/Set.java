@@ -52,8 +52,7 @@ public class Set {
 		return;
 	}
 
-	ListNode front = mList.front();
-	ListNode current = front;
+	ListNode current = mList.front();;
 	int rt = 0;
 	
 	try {
@@ -76,9 +75,8 @@ public class Set {
 	}
 
 	try {
-		if(rt > 0) {
-			mList.back().insertAfter(c);
-		}
+		//rt > 0
+		mList.back().insertAfter(c);
 	} catch(InvalidNodeException e) {
 		System.out.println("Insert end fail.");
 	}
