@@ -8,7 +8,7 @@ import list.*;
  **/
 public class Set {
   /* Fill in the data fields here. */
-  List mList;
+  private List mList;
   /**
    * Set ADT invariants:
    *  1)  The Set's elements must be precisely the elements of the List.
@@ -56,7 +56,7 @@ public class Set {
 	int rt = 0;
 	
 	try {
-		while(true) {
+		while(current.isValidNode()) {
 			rt = c.compareTo(current.item());
 			if(0 == rt) {
 				//Do nothing and return;
@@ -70,8 +70,7 @@ public class Set {
 			current = current.next();
 		}
 	} catch(InvalidNodeException e) {
-		//Finish traverse
-		System.out.println("Traverse finish.");
+		e.printStackTrace();
 	}
 
 	try {
