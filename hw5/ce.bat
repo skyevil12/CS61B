@@ -1,2 +1,2 @@
 javac -g list/*.java *.java
-java -ea list.DList
+#java -ea list.DList
