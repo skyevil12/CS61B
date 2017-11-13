@@ -8,7 +8,7 @@ import list.*;
  **/
 public class Set {
   /* Fill in the data fields here. */
-
+  List mList;
   /**
    * Set ADT invariants:
    *  1)  The Set's elements must be precisely the elements of the List.
@@ -24,6 +24,7 @@ public class Set {
    **/
   public Set() { 
     // Your solution here.
+	mList = new DList();
   }
 
   /**
@@ -33,7 +34,7 @@ public class Set {
    **/
   public int cardinality() {
     // Replace the following line with your solution.
-    return 0;
+    return mList.length();
   }
 
   /**
@@ -46,6 +47,24 @@ public class Set {
    **/
   public void insert(Comparable c) {
     // Your solution here.
+	ListNode front = mList.front();
+	ListNode current = null;
+	
+	try {
+		while(true) {
+			current = front.next();
+			int rt = c.compareTo(current.item());
+			if(0 == rt) {
+				//Do nothing and return;
+				break;
+			} els if(rt < 0) {
+				//Insert before
+				current.insertBefore(c);
+			}
+		}
+	} catch(InvalidNodeException e) {
+		//Finish traverse
+	}
   }
 
   /**
