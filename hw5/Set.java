@@ -47,23 +47,40 @@ public class Set {
    **/
   public void insert(Comparable c) {
     // Your solution here.
+	if(mList.isEmpty()) {
+		mList.insertFront(c);
+		return;
+	}
+
 	ListNode front = mList.front();
-	ListNode current = null;
+	ListNode current = front;
+	int rt = 0;
 	
 	try {
 		while(true) {
-			current = front.next();
-			int rt = c.compareTo(current.item());
+			rt = c.compareTo(current.item());
 			if(0 == rt) {
 				//Do nothing and return;
-				break;
-			} els if(rt < 0) {
+				return;
+			} else if(rt < 0) {
 				//Insert before
 				current.insertBefore(c);
+				return;
 			}
+
+			current = current.next();
 		}
 	} catch(InvalidNodeException e) {
 		//Finish traverse
+		System.out.println("Traverse finish.");
+	}
+
+	try {
+		if(rt > 0) {
+			mList.back().insertAfter(c);
+		}
+	} catch(InvalidNodeException e) {
+		System.out.println("Insert end fail.");
 	}
   }
 
@@ -120,7 +137,7 @@ public class Set {
    **/
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+    return new StringBuilder().append(mList).toString();
   }
 
   public static void main(String[] argv) {
