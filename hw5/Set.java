@@ -163,6 +163,45 @@ public class Set {
    **/
   public void intersect(Set s) {
     // Your solution here.
+	ListNode myCurrent = this.mList.front();
+	ListNode current = s.mList.front();
+
+	try {
+		if(this.mList.isEmpty() || s.mList.isEmpty()) {
+			//Remove all if one of the set is empty
+			while(myCurrent.isValidNode()) {
+				ListNode tmpForRemoved = myCurrent;
+				myCurrent = myCurrent.next();
+				tmpForRemoved.remove();
+			}
+
+			return;
+		}
+
+		while(current.isValidNode()) {
+			Object currentItem = current.item();
+			while(myCurrent.isValidNode()) {
+				int rt = ((Comparable)myCurrent.item()).compareTo(currentItem);
+				if(rt > 0) {
+					break;
+				} else if(rt < 0) {
+					ListNode tmpForRemoved = myCurrent;
+					myCurrent = myCurrent.next();
+					tmpForRemoved.remove();
+				} else {
+					myCurrent = myCurrent.next();
+				}
+			}
+
+			if(!myCurrent.isValidNode()) {
+				break;
+			}
+
+			current = current.next();
+		}
+	} catch (InvalidNodeException e) {
+		e.printStackTrace();
+	}
   }
 
   /**
