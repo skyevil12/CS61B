@@ -120,12 +120,12 @@ public class Set {
 		// Include this + s, s + this and "s hybrid this" case
 		OuterLoop:
 		while(current.isValidNode()) {
+			Object currentItem = current.item();
 			while(myCurrent.isValidNode()) {
-				Comparable myCurrentItem = (Comparable)(myCurrent.item());
-				Object currentItem = current.item();
-				if(myCurrentItem.compareTo(currentItem) > 0) {
+				int rt = ((Comparable) myCurrent.item()).compareTo(currentItem);
+				if(rt > 0) {
 					break;
-				} else if(myCurrentItem.compareTo(currentItem) == 0) {
+				} else if(rt == 0) {
 					current = current.next();
 					myCurrent = myCurrent.next();
 					continue OuterLoop;
@@ -137,6 +137,7 @@ public class Set {
 			if(myCurrent.isValidNode()) {
 				myCurrent.insertBefore(currentItem);
 			} else {
+				//this set already traverse finish, go on set s
 				this.mList.insertBack(currentItem);
 			}
 
