@@ -97,7 +97,54 @@ public class Set {
    *  DO NOT ATTEMPT TO COPY ELEMENTS; just copy _references_ to them.
    **/
   public void union(Set s) {
-    // Your solution here.
+	// Your solution here.
+	if(s.mList.isEmpty()) {
+		// Input empty set, do nothing
+		return;
+	}
+
+	try {
+		ListNode front = s.mList.front();
+		ListNode current = front;
+		if(mList.isEmpty()) {
+			while(current.isValidNode()) {
+				this.mList.insertBack(current.item());
+				current = current.next();
+			}
+			//Traverse finish
+			return;
+		}
+
+		ListNode myCurrent = this.mList.front();
+
+		// Include this + s, s + this and "s hybrid this" case
+		OuterLoop:
+		while(current.isValidNode()) {
+			while(myCurrent.isValidNode()) {
+				Comparable myCurrentItem = (Comparable)(myCurrent.item());
+				Object currentItem = current.item();
+				if(myCurrentItem.compareTo(currentItem) > 0) {
+					break;
+				} else if(myCurrentItem.compareTo(currentItem) == 0) {
+					current = current.next();
+					myCurrent = myCurrent.next();
+					continue OuterLoop;
+				} else {
+					myCurrent = myCurrent.next();
+				}
+			}
+
+			if(myCurrent.isValidNode()) {
+				myCurrent.insertBefore(currentItem);
+			} else {
+				this.mList.insertBack(currentItem);
+			}
+
+			current = current.next();
+		}
+	} catch(InvalidNodeException e) {
+		e.printStackTrace();
+	}
   }
 
   /**
