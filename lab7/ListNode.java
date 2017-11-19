@@ -18,5 +18,14 @@ class ListNode {
     item = i;
     next = n;
   }
-
+  
+  public String toString() {
+	ListNode current = this;
+	StringBuilder output = new StringBuilder();
+	do {
+		output.append(current.item).append(",");
+		current = current.next;
+	} while(null != current);
+	return output.toString();
+  }
 }
