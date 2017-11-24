@@ -25,7 +25,7 @@ public class HashTableChained implements Dictionary {
   private static final int DEFAULT_ESTIMATE_SIZE = 100;
   private static final int DEFAULT_BUCKET_SIZE = 101;
   //Note this must be prime
-  private static int mCompress_Para_N = DEFAULT_BUCKET_SIZE;
+  private int mCompress_Para_N = DEFAULT_BUCKET_SIZE;
   private static final int COMPRESS_PARA_P = 16908799;
   private static final int COMPRESS_PARA_A = (int)((COMPRESS_PARA_P - 1) * Math.random());
   private static final int COMPRESS_PARA_B = (int)((COMPRESS_PARA_P - 1) * Math.random());

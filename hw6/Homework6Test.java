@@ -62,6 +62,23 @@ public class Homework6Test {
     // from here.
 	System.out.println(table);
 	table.outputCollisionPerf();
+
+	//Test insert/remove/find/isEmpty/size/makeEmpty
+	HashTableChained rawTable = new HashTableChained();
+	assert(rawTable.isEmpty());
+	assert(0 == rawTable.size());
+	rawTable.insert(1, "Winston");
+	rawTable.insert(2, "Handsome");
+	rawTable.insert(3, "Talented programmer");
+	assert(!rawTable.isEmpty());
+	assert(0 != rawTable.size());
+	rawTable.remove(1);
+	System.out.println(rawTable);
+	System.out.println(rawTable.find(2).value());
+	assert(null == rawTable.find(1));
+	rawTable.makeEmpty();
+	assert(rawTable.isEmpty());
+	assert(0 == rawTable.size());
   }
 
 }
