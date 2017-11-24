@@ -281,6 +281,7 @@ public class HashTableChained implements Dictionary {
 	for(Object obj: mData) {
 		obj = null;
 	}
+	mDataSize = 0;
   }
 
   public void outputCollisionPerf() {
