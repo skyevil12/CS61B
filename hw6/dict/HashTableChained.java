@@ -1,6 +1,6 @@
-/* HashTableChained.java */
-
 package dict;
+/* HashTableChained.java */
+import list.*;
 
 /**
  *  HashTableChained implements a Dictionary as a hash table with chaining.
@@ -19,7 +19,14 @@ public class HashTableChained implements Dictionary {
   /**
    *  Place any data fields here.
    **/
-
+  //Array contains Entry or SList with Entry
+  private Object[] mData;
+  private static final int DEFAULT_BUCKET_SIZE = 101;
+  private static int mCompress_Para_N = DEFAULT_BUCKET_SIZE;
+  private static final int COMPRESS_PARA_P = 16908799;
+  private static final int COMPRESS_PARA_A = (int)((COMPRESS_PARA_P - 1) * Math.random());
+  private static final int COMPRESS_PARA_B = (int)((COMPRESS_PARA_P - 1) * Math.random());
+  private int mDataSize = 0;
 
 
   /** 
@@ -30,6 +37,11 @@ public class HashTableChained implements Dictionary {
 
   public HashTableChained(int sizeEstimate) {
     // Your solution here.
+	// load factor is 0.5
+	int bucketSize = sizeEstimate >> 1;
+	System.out.println("bucketSize is " + bucketSize);
+	mData = new Object[bucketSize];
+	mCompress_Para_N = bucketSize;
   }
 
   /** 
@@ -39,6 +51,8 @@ public class HashTableChained implements Dictionary {
 
   public HashTableChained() {
     // Your solution here.
+	System.out.println("bucketSize is " + DEFAULT_BUCKET_SIZE);
+	mData = new Object[DEFAULT_BUCKET_SIZE];
   }
 
   /**
@@ -51,9 +65,16 @@ public class HashTableChained implements Dictionary {
 
   int compFunction(int code) {
     // Replace the following line with your solution.
-    return 88;
+	if(code < 0) {
+		code += Integer.MAX_VALUE;
+	}
+
+    return ((COMPRESS_PARA_A * code + COMPRESS_PARA_B) % COMPRESS_PARA_P) % mCompress_Para_N;
   }
 
+  int compFunction(Object key) {
+	return compFunction(key.hashCode());
+  }
   /** 
    *  Returns the number of entries stored in the dictionary.  Entries with
    *  the same key (or even the same key and value) each still count as
@@ -63,7 +84,7 @@ public class HashTableChained implements Dictionary {
 
   public int size() {
     // Replace the following line with your solution.
-    return 0;
+    return mDataSize;
   }
 
   /** 
@@ -74,7 +95,7 @@ public class HashTableChained implements Dictionary {
 
   public boolean isEmpty() {
     // Replace the following line with your solution.
-    return true;
+    return 0 == mDataSize;
   }
 
   /**
@@ -92,7 +113,35 @@ public class HashTableChained implements Dictionary {
 
   public Entry insert(Object key, Object value) {
     // Replace the following line with your solution.
-    return null;
+	int bucketIndex = compFunction(key);
+	Object curEntry = mData[bucketIndex];
+	Entry newEntry = wrapEntry(key, value);
+	do {
+		//Assign Entry if empty
+		if(null == curEntry) {
+			mData[compFunction(key)] = newEntry;
+			break;
+		}
+
+		if(curEntry instanceof List) {
+			((List)curEntry).insertFront(newEntry);
+		} else if(curEntry instanceof Entry) {
+			List chainSList = new SList();
+			chainSList.insertFront(curEntry);
+			chainSList.insertFront(newEntry);
+			mData[bucketIndex] = chainSList;
+		}
+	}while(false);
+	mDataSize++;
+
+    return newEntry;
+  }
+
+  private Entry wrapEntry(Object key, Object value) {
+	Entry entry = new Entry();
+	entry.key = key;
+	entry.value = value;
+	return entry;
   }
 
   /** 
@@ -109,7 +158,67 @@ public class HashTableChained implements Dictionary {
 
   public Entry find(Object key) {
     // Replace the following line with your solution.
-    return null;
+	int bucketIndex = compFunction(key);
+	Object curEntry = mData[bucketIndex];
+	Entry target = null;
+	if(curEntry instanceof List) {
+		target = findEntryFromList(key, (List)curEntry);
+	} else if(curEntry instanceof Entry) {
+		target = (Entry)curEntry;
+	} else if(null == curEntry) {
+		//Do nothing
+	}
+    return target;
+  }
+
+  private Entry removeEntryFromList(Object key, List list) {
+	Entry removeEntry = findEntryFromList(key, list);
+	do {
+		if(null == removeEntry) {
+			break;
+		}
+
+		ListNode curNode = list.front();
+		while(null != curNode) {
+			Entry curEntry = (Entry)curNode.item();
+			if(key.equals(curEntry.key())) {
+				curNode.remove();
+				break;
+			}
+			curNode = curNode.next();
+		}
+	} while(false);
+	return removeEntry;
+  }
+
+  //Get the only matched Entry or randomly select from list
+  private Entry findEntryFromList(Object key, List list) {
+	List subList = new SList();
+	ListNode curNode = list.front();
+	while(null != curNode) {
+		Entry curEntry = (Entry)curNode.item();
+		if(key.equals(curEntry.key())) {
+			subList.insertFront(curEntry);
+		}
+		curNode = curNode.next();
+	}
+	return subList.isEmpty() ? null : randomGetEntryFromList(subList);
+  }
+
+  private Entry randomGetEntryFromList(List list) {
+	int selIndex = (int)((list.length() - 1) * Math.random());
+	int curIndex = 0;
+	System.out.println("selIndex is " + selIndex);
+	ListNode curNode = list.front();
+	while(null != curNode) {
+		if(curIndex == selIndex) {
+			break;
+		}
+		curNode = curNode.next();
+		curIndex++;
+	}
+
+	return (Entry)curNode.item();
   }
 
   /** 
@@ -127,7 +236,28 @@ public class HashTableChained implements Dictionary {
 
   public Entry remove(Object key) {
     // Replace the following line with your solution.
-    return null;
+	int bucketIndex = compFunction(key);
+	Object curEntry = mData[bucketIndex];
+	Entry target = null;
+	do {
+		if(curEntry instanceof List) {
+			List entryList = (List)curEntry;
+			if(entryList.isEmpty()) {
+				mData[bucketIndex] = null;
+				break;
+			}
+			target = removeEntryFromList(key, entryList);
+		} else if(curEntry instanceof Entry) {
+			target = (Entry)curEntry;
+			mData[bucketIndex] = null;
+		} else if(null == curEntry) {
+			//Do nothing
+			break;
+		}
+		// Only execute when found!
+		mDataSize--;
+	} while(false);
+    return target;
   }
 
   /**
@@ -135,6 +265,13 @@ public class HashTableChained implements Dictionary {
    */
   public void makeEmpty() {
     // Your solution here.
+	// GC issue?
+	for(Object obj: mData) {
+		obj = null;
+	}
   }
 
+  public static void main(String... args) {
+	//System.out.println((int)(10 * Math.random()));
+  }
 }
