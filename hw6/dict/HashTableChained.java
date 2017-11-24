@@ -1,6 +1,7 @@
 package dict;
 /* HashTableChained.java */
 import list.*;
+import util.*;
 
 /**
  *  HashTableChained implements a Dictionary as a hash table with chaining.
@@ -21,12 +22,16 @@ public class HashTableChained implements Dictionary {
    **/
   //Array contains Entry or SList with Entry
   private Object[] mData;
+  private static final int DEFAULT_ESTIMATE_SIZE = 100;
   private static final int DEFAULT_BUCKET_SIZE = 101;
+  //Note this must be prime
   private static int mCompress_Para_N = DEFAULT_BUCKET_SIZE;
   private static final int COMPRESS_PARA_P = 16908799;
   private static final int COMPRESS_PARA_A = (int)((COMPRESS_PARA_P - 1) * Math.random());
   private static final int COMPRESS_PARA_B = (int)((COMPRESS_PARA_P - 1) * Math.random());
   private int mDataSize = 0;
+  private int mCollisionsCount = 0;
+  private int mSizeEstimate = DEFAULT_ESTIMATE_SIZE;
 
 
   /** 
@@ -37,9 +42,13 @@ public class HashTableChained implements Dictionary {
 
   public HashTableChained(int sizeEstimate) {
     // Your solution here.
+	mSizeEstimate = sizeEstimate;
 	// load factor is 0.5
-	int bucketSize = sizeEstimate >> 1;
+	int bucketSize = Util.findPrime((int)(sizeEstimate / 0.75));
+	System.out.println("sizeEstimate is " + sizeEstimate);
 	System.out.println("bucketSize is " + bucketSize);
+	//System.out.println("A " + COMPRESS_PARA_A);
+	//System.out.println("B " + COMPRESS_PARA_B);
 	mData = new Object[bucketSize];
 	mCompress_Para_N = bucketSize;
   }
@@ -69,7 +78,8 @@ public class HashTableChained implements Dictionary {
 		code += Integer.MAX_VALUE;
 	}
 
-    return ((COMPRESS_PARA_A * code + COMPRESS_PARA_B) % COMPRESS_PARA_P) % mCompress_Para_N;
+    return Math.abs(((COMPRESS_PARA_A * code + COMPRESS_PARA_B) % COMPRESS_PARA_P)) % mCompress_Para_N;
+	//return Math.abs(code) % mCompress_Para_N;
   }
 
   int compFunction(Object key) {
@@ -119,17 +129,19 @@ public class HashTableChained implements Dictionary {
 	do {
 		//Assign Entry if empty
 		if(null == curEntry) {
-			mData[compFunction(key)] = newEntry;
+			mData[bucketIndex] = newEntry;
 			break;
 		}
 
 		if(curEntry instanceof List) {
 			((List)curEntry).insertFront(newEntry);
+			mCollisionsCount++;
 		} else if(curEntry instanceof Entry) {
 			List chainSList = new SList();
 			chainSList.insertFront(curEntry);
 			chainSList.insertFront(newEntry);
 			mData[bucketIndex] = chainSList;
+			mCollisionsCount++;
 		}
 	}while(false);
 	mDataSize++;
@@ -271,7 +283,36 @@ public class HashTableChained implements Dictionary {
 	}
   }
 
+  public void outputCollisionPerf() {
+	System.out.println("Expected num of collisions is " + Util.expectedCollisions(mSizeEstimate, mCompress_Para_N));
+	System.out.println("Actual num of collisions is " + mCollisionsCount);
+  }
+
+  @Override
+  public String toString() {
+	StringBuilder sb = new StringBuilder();
+	for(Object obj: mData) {
+		if(obj instanceof List) {
+			sb.append("[")
+			.append(((List)obj).length())
+			.append("]");
+		} else if(obj instanceof Entry) {
+			sb.append("[1]");
+		} else if(null == obj) {
+			sb.append("[0]");
+		}
+	}
+
+	return sb.toString();
+  }
+
   public static void main(String... args) {
 	//System.out.println((int)(10 * Math.random()));
+	/*for(int i = 2; i < 200; i++) {
+		if(Util.isPrime(i)) {
+			System.out.println("Prime: " + i);
+		}
+	}*/
+	//System.out.println(Util.expectedCollisions(100, 100));
   }
 }

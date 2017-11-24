@@ -66,7 +66,18 @@ public class SimpleBoard {
     // Replace the following line with your solution.  Be sure to return false
     //   (rather than throwing a ClassCastException) if "board" is not
     //   a SimpleBoard.
-    return false;
+	if(!(board instanceof SimpleBoard)) {
+		return false;
+	}
+
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; i < grid[0].length; j++) {
+			if(grid[i][j] != ((SimpleBoard)board).grid[i][j]) {
+				return false;
+			}
+		}
+	}
+    return true;
   }
 
   /**
@@ -76,7 +87,18 @@ public class SimpleBoard {
 
   public int hashCode() {
     // Replace the following line with your solution.
-    return 99;
+	int rtCode = 0;
+	int pow = 0;
+	//Divide the 64 bit to 4 parts and add all to avoid overflow
+	for(int i = 0; i < grid.length; i++) {
+		for(int j = 0; j < grid[0].length; j++) {
+			rtCode += (Math.pow(3, pow++) * grid[i][j]);
+			if(pow >= 16) {
+				pow %= 16;
+			}
+		}
+	}
+    return rtCode;
   }
 
 }
