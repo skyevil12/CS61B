@@ -4,9 +4,15 @@ prove 2^n + 1 <= 3 * (2^2n - 2^4) when n >= n0
 
 	  2^n + 2^4 + 2^0 <= 3 * (2^2n) for n >= 2(c = 3, n0 = 2)
 
+	  then 2^n + 1 is O(4^n - 16)
 part2.
 
+Since f(n) <= c' * g(n)
+      g(n) <= c'' * h(n) and c', c'' >0
 
+	  then f(n) <= C' * c'' * h(n) for n >= max(N', N'')
+
+	  f(n) is O(h(n))
 
 
 
