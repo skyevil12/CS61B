@@ -13,6 +13,9 @@ Since f(n) <= c' * g(n)
 	  then f(n) <= C' * c'' * h(n) for n >= max(N', N'')
 
 	  f(n) is O(h(n))
+	  
+part3. 
+
 
 
 
