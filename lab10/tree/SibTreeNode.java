@@ -78,7 +78,15 @@ class SibTreeNode extends TreeNode {
    */
   public TreeNode parent() throws InvalidNodeException {
     // REPLACE THE FOLLOWING LINE WITH YOUR SOLUTION TO PART I.
-    return null;
+	if(!isValidNode()) {
+		throw new InvalidNodeException();
+	}
+	
+	if(myTree.root() == this) {
+		return new SibTreeNode();
+	}
+	
+    return parent;
   }
 
   /**
@@ -133,6 +141,40 @@ class SibTreeNode extends TreeNode {
    */
   public void insertChild(Object item, int c) throws InvalidNodeException {
     // FILL IN YOUR SOLUTION TO PART II HERE.
+	if(!isValidNode()) {
+		throw new InvalidNodeException();
+	}
+	
+	myTree.size++;
+	SibTreeNode newNode = new SibTreeNode(myTree, item);
+	newNode.parent = this;
+	
+	if(c < 1) {
+		c = 1;
+	}
+	
+	SibTreeNode child = firstChild;
+	//inValid child node: new node and put as first child
+	if(null == child) {
+		firstChild = newNode;
+		return;
+	}
+	
+	if(1 == c) {
+		newNode.nextSibling = firstChild;
+		firstChild = newNode;
+		return;
+	}
+	
+	//or traverse to specific node
+	SibTreeNode prevChild = null;
+	while(--c > 0 || child.nextSibling().isValidNode()) {
+		prevChild = child;
+		child = (SibTreeNode)child.nextSibling();
+	}
+	
+	prevChild.nextSibling = newNode;
+	newNode.nextSibling = child;
   }
 
   /**

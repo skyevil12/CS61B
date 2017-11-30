@@ -16,6 +16,9 @@ Since f(n) <= c' * g(n)
 	  
 part3. 
 
+      Proof that the divide result would be 0 when n-> extreme large
+	  
+
 
 
 
