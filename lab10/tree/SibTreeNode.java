@@ -188,6 +188,38 @@ class SibTreeNode extends TreeNode {
 	if(!isValidNode()) {
 		throw new InvalidNodeException();
 	}
+
+	if(0 != children()) {
+		return;
+	}
+
+	myTree.size--;
+	this.valid = false;
+
+	//Reset if first child
+	if(this.parent.firstChild == this && null != this.nextSibling) {
+		this.parent.firstChild = this.nextSibling;
+		return;
+	}
+
+	SibTreeNode prev = null;
+	SibTreeNode child = this.parent.firstChild;
+	if(this == this.parent.firstChild) {
+		this.parent.firstChild = this.nextSibling;
+		this.nextSibling = null;
+		return;
+	}
+
+	while(this != child) {
+		prev = child;
+		child = child.nextSibling;
+	}
+
+	if(null != nextSibling) {
+		prev.nextSibling = this.nextSibling;
+	} else {
+		prev.nextSibling = new SibTreeNode();
+	}
   }
 
 }
