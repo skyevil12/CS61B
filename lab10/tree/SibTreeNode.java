@@ -168,7 +168,7 @@ class SibTreeNode extends TreeNode {
 	
 	//or traverse to specific node
 	SibTreeNode prevChild = null;
-	while(--c > 0 || child.nextSibling().isValidNode()) {
+	while(child.isValidNode() && --c > 0) {
 		prevChild = child;
 		child = (SibTreeNode)child.nextSibling();
 	}
@@ -185,6 +185,9 @@ class SibTreeNode extends TreeNode {
    */
   public void removeLeaf() throws InvalidNodeException {
     // FILL IN YOUR SOLUTION TO PART III HERE.
+	if(!isValidNode()) {
+		throw new InvalidNodeException();
+	}
   }
 
 }
