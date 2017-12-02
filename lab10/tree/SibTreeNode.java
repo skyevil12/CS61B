@@ -194,18 +194,14 @@ class SibTreeNode extends TreeNode {
 	}
 
 	if(0 != children()) {
-		System.out.println("0");
 		return;
 	}
 
-	myTree.size--;
-
-	//Reset if first child
+	//Reset if first child or the only root
 	SibTreeNode lParent = (SibTreeNode) this.parent();
-	if(lParent.firstChild == this) {
+	if(lParent.firstChild == this || this == myTree.root()) {
 		lParent.firstChild = this.nextSibling;
-		this.valid = false;
-		System.out.println("1");
+		removeNode();
 		return;
 	}
 
@@ -218,8 +214,16 @@ class SibTreeNode extends TreeNode {
 	}
 
 	prev.nextSibling = this.nextSibling;
-	this.valid = false;
-	System.out.println("2");
+	removeNode();
   }
 
+  private void removeNode() {
+	this.item = null;
+	valid = false;
+	myTree.size--;
+	myTree = null;
+	parent = null;
+	firstChild = null;
+	nextSibling = null;
+  }
 }
