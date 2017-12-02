@@ -153,9 +153,8 @@ class SibTreeNode extends TreeNode {
 		c = 1;
 	}
 	
-	SibTreeNode child = firstChild;
 	//inValid child node: new node and put as first child
-	if(null == child) {
+	if(null == firstChild) {
 		firstChild = newNode;
 		return;
 	}
@@ -167,6 +166,7 @@ class SibTreeNode extends TreeNode {
 	}
 	
 	//or traverse to specific node
+	SibTreeNode child = firstChild;
 	SibTreeNode prevChild = null;
 	while(child.isValidNode() && --c > 0) {
 		prevChild = child;
@@ -174,7 +174,11 @@ class SibTreeNode extends TreeNode {
 	}
 	
 	prevChild.nextSibling = newNode;
-	newNode.nextSibling = child;
+	if(child.isValidNode()) {
+		newNode.nextSibling = child;
+	} else {
+		newNode.nextSibling = null;
+	}
   }
 
   /**
@@ -190,36 +194,32 @@ class SibTreeNode extends TreeNode {
 	}
 
 	if(0 != children()) {
+		System.out.println("0");
 		return;
 	}
 
 	myTree.size--;
-	this.valid = false;
 
 	//Reset if first child
-	if(this.parent.firstChild == this && null != this.nextSibling) {
-		this.parent.firstChild = this.nextSibling;
+	SibTreeNode lParent = (SibTreeNode) this.parent();
+	if(lParent.firstChild == this) {
+		lParent.firstChild = this.nextSibling;
+		this.valid = false;
+		System.out.println("1");
 		return;
 	}
 
 	SibTreeNode prev = null;
-	SibTreeNode child = this.parent.firstChild;
-	if(this == this.parent.firstChild) {
-		this.parent.firstChild = this.nextSibling;
-		this.nextSibling = null;
-		return;
-	}
+	SibTreeNode child = lParent.firstChild;
 
-	while(this != child) {
+	while(null != child && this != child) {
 		prev = child;
 		child = child.nextSibling;
 	}
 
-	if(null != nextSibling) {
-		prev.nextSibling = this.nextSibling;
-	} else {
-		prev.nextSibling = new SibTreeNode();
-	}
+	prev.nextSibling = this.nextSibling;
+	this.valid = false;
+	System.out.println("2");
   }
 
 }
