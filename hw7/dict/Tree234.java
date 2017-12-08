@@ -102,6 +102,17 @@ public class Tree234 extends IntDictionary {
    **/
   public void insert(int key) {
     // Fill in your solution here.
+	Tree234Node node = root;
+	while(null != node) {
+		//Save prevNode
+		
+		//Check if three keys
+		
+		//Find key and related child (duplicate node print msg and return)
+		
+	}
+
+	//Insert node(Must insert in leaf node?)
   }
 
 
