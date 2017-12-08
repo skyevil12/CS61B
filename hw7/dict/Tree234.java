@@ -103,18 +103,107 @@ public class Tree234 extends IntDictionary {
   public void insert(int key) {
     // Fill in your solution here.
 	Tree234Node node = root;
+	Tree234Node prevNode = null;
 	while(null != node) {
-		//Save prevNode
-		
 		//Check if three keys
-		
+		if(3 == node.keys) {
+			node = pullMidNode(node);
+		}
+
+		//Save prevNode
+		prevNode = node;
+
 		//Find key and related child (duplicate node print msg and return)
-		
+		if(key < node.key1) {
+			node = node.child1;
+		} else if(key == node.key1 || key == node.key2 || key == node.key3) {
+			outputDupKeyMsg(key);
+			return;
+		} else if(1 == node.keys || key < node.key2) {
+			node = node.child2;
+		} else if(2 == node.keys || key < node.key3) {
+			node = node.child3;
+		} else {
+			node = node.child4;
+		}
 	}
 
-	//Insert node(Must insert in leaf node?)
+	//Insert node(Must insert in leaf node?) Must be 1 or 2 keys
+	if(1 == prevNode.keys) {
+		if(key < prevNode.key1) {
+			prevNode.key2 = prevNode.key1;
+			prevNode.key1 = key;
+		} else {
+			// key > prevNode.key1
+			prevNode.key2 = key;
+		}
+	} else {
+	//two keys
+		if(key < prevNode.key1) {
+			prevNode.key3 = prevNode.key2;
+			prevNode.key2 = prevNode.key1;
+			prevNode.key1 = key;
+		} else if(key > prevNode.key1 && key < prevNode.key2) {
+			prevNode.key3 = prevNode.key2;
+			prevNode.key2 = key;
+		} else if(key > prevNode.key2) {
+			prevNode.key3 = key;
+		}
+	}
+	prevNode.keys++;
   }
 
+  private Tree234Node pullMidNode(Tree234Node node) {
+	Tree234Node newParent = null;
+	if(null == node.parent) {
+		newParent = new Tree234Node(null, node.key2);
+		root = newParent;
+	} else {
+		newParent = node.parent;
+		//Compare and update key1, 2, 3 value, Ori parent must have one or two keys
+		//one key
+		if(1 == node.keys) {
+			if(key < node.key1) {
+				node.key2 = node.key1;
+				node.key1 = key;
+			} else {
+				// key > node.key1
+				node.key2 = key;
+			}
+		} else {
+		//two keys
+			if(key < node.key1) {
+				node.key3 = node.key2;
+				node.key2 = node.key1;
+				node.key1 = key;
+			} else if(key > node.key1 && key < node.key2) {
+				node.key3 = node.key2;
+				node.key2 = key;
+			} else if(key > node.key2) {
+				node.key3 = key;
+			}
+		}
+		node.keys++;
+	}
+
+	Tree234Node lNode = new Tree234Node(newParent, node.key1);
+	lNode.child1 = node.child1;
+	lNode.child2 = node.child2;
+
+	Tree234Node rNode = new Tree234Node(newParent, node.key3);
+	rNode.child1 = node.child3;
+	rNode.child2 = node.child4;
+
+	newParent.child1 = lNode;
+	newParent.child2 = rNode;
+
+	return newParent;
+  }
+
+  private void outputDupKeyMsg(int key) {
+	StringBuilder sb = new StringBuilder();
+	System.out.println(sb.append(key).append(" already present, return!").toString());
+  }
 
   /**
    *  testHelper() prints the String representation of this tree, then
