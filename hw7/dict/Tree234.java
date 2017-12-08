@@ -102,16 +102,21 @@ public class Tree234 extends IntDictionary {
    **/
   public void insert(int key) {
     // Fill in your solution here.
+	if(null == root) {
+		root = new Tree234Node(null, key);
+		return;
+	}
+	
 	Tree234Node node = root;
-	Tree234Node prevNode = null;
+	Tree234Node prev = root;
 	while(null != node) {
 		//Check if three keys
 		if(3 == node.keys) {
 			node = pullMidNode(node);
 		}
 
-		//Save prevNode
-		prevNode = node;
+		//Save prev
+		prev = node;
 
 		//Find key and related child (duplicate node print msg and return)
 		if(key < node.key1) {
@@ -129,75 +134,102 @@ public class Tree234 extends IntDictionary {
 	}
 
 	//Insert node(Must insert in leaf node?) Must be 1 or 2 keys
-	if(1 == prevNode.keys) {
-		if(key < prevNode.key1) {
-			prevNode.key2 = prevNode.key1;
-			prevNode.key1 = key;
+	if(1 == prev.keys) {
+		if(key < prev.key1) {
+			prev.key2 = prev.key1;
+			prev.key1 = key;
 		} else {
-			// key > prevNode.key1
-			prevNode.key2 = key;
+			// key > prev.key1
+			prev.key2 = key;
 		}
 	} else {
 	//two keys
-		if(key < prevNode.key1) {
-			prevNode.key3 = prevNode.key2;
-			prevNode.key2 = prevNode.key1;
-			prevNode.key1 = key;
-		} else if(key > prevNode.key1 && key < prevNode.key2) {
-			prevNode.key3 = prevNode.key2;
-			prevNode.key2 = key;
-		} else if(key > prevNode.key2) {
-			prevNode.key3 = key;
+		if(key < prev.key1) {
+			prev.key3 = prev.key2;
+			prev.key2 = prev.key1;
+			prev.key1 = key;
+		} else if(key > prev.key1 && key < prev.key2) {
+			prev.key3 = prev.key2;
+			prev.key2 = key;
+		} else if(key > prev.key2) {
+			prev.key3 = key;
 		}
 	}
-	prevNode.keys++;
+	prev.keys++;
   }
 
-  private Tree234Node pullMidNode(Tree234Node node) {
-	Tree234Node newParent = null;
+  private Tree234Node pullMidNode(final Tree234Node node) {
+	Tree234Node parent = null;
 	if(null == node.parent) {
-		newParent = new Tree234Node(null, node.key2);
-		root = newParent;
+		parent = new Tree234Node(null, node.key2);
+		root = parent;
+		
+		Tree234Node lNode = new Tree234Node(parent, node.key1);
+		lNode.child1 = node.child1;
+		lNode.child2 = node.child2;
+
+		Tree234Node rNode = new Tree234Node(parent, node.key3);
+		rNode.child1 = node.child3;
+		rNode.child2 = node.child4;
+
+		parent.child1 = lNode;
+		parent.child2 = rNode;
 	} else {
-		newParent = node.parent;
+		parent = node.parent;
+		int key = node.key2;
+		Tree234Node lNode = new Tree234Node(parent, node.key1);
+		lNode.child1 = node.child1;
+		lNode.child2 = node.child2;
+
+		Tree234Node rNode = new Tree234Node(parent, node.key3);
+		rNode.child1 = node.child3;
+		rNode.child2 = node.child4;
 		//Compare and update key1, 2, 3 value, Ori parent must have one or two keys
 		//one key
-		if(1 == node.keys) {
-			if(key < node.key1) {
-				node.key2 = node.key1;
-				node.key1 = key;
+		if(1 == parent.keys) {
+			if(key < parent.key1) {
+				parent.key2 = parent.key1;
+				parent.key1 = key;
+				
+				parent.child3 = parent.child2;
+				parent.child1 = lNode;
+				parent.child2 = rNode;
 			} else {
-				// key > node.key1
-				node.key2 = key;
+				// key > parent.key1
+				parent.key2 = key;
+				parent.child2 = lNode;
+				parent.child3 = rNode;
 			}
 		} else {
 		//two keys
-			if(key < node.key1) {
-				node.key3 = node.key2;
-				node.key2 = node.key1;
-				node.key1 = key;
-			} else if(key > node.key1 && key < node.key2) {
-				node.key3 = node.key2;
-				node.key2 = key;
-			} else if(key > node.key2) {
-				node.key3 = key;
+			if(key < parent.key1) {
+				parent.key3 = parent.key2;
+				parent.key2 = parent.key1;
+				parent.key1 = key;
+				
+				parent.child4 = parent.child3;
+				parent.child3 = parent.child2;
+				parent.child1 = lNode;
+				parent.child2 = rNode;
+				
+			} else if(key > parent.key1 && key < parent.key2) {
+				parent.key3 = parent.key2;
+				parent.key2 = key;
+				
+				parent.child4 = parent.child3;
+				parent.child2 = lNode;
+				parent.child3 = rNode;
+			} else if(key > parent.key2) {
+				parent.key3 = key;
+				
+				parent.child3 = lNode;
+				parent.child4 = rNode;
 			}
 		}
-		node.keys++;
+		parent.keys++;
 	}
 
-	Tree234Node lNode = new Tree234Node(newParent, node.key1);
-	lNode.child1 = node.child1;
-	lNode.child2 = node.child2;
-
-	Tree234Node rNode = new Tree234Node(newParent, node.key3);
-	rNode.child1 = node.child3;
-	rNode.child2 = node.child4;
-
-	newParent.child1 = lNode;
-	newParent.child2 = rNode;
-
-	return newParent;
+	return parent;
   }
 
   private void outputDupKeyMsg(int key) {
