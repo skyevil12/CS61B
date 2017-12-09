@@ -167,10 +167,18 @@ public class Tree234 extends IntDictionary {
 		Tree234Node lNode = new Tree234Node(parent, node.key1);
 		lNode.child1 = node.child1;
 		lNode.child2 = node.child2;
+		if(null != node.child1)
+			node.child1.parent = lNode;
+		if(null != node.child2)
+			node.child2.parent = lNode;
 
 		Tree234Node rNode = new Tree234Node(parent, node.key3);
 		rNode.child1 = node.child3;
 		rNode.child2 = node.child4;
+		if(null != node.child3)
+			node.child3.parent = rNode;
+		if(null != node.child4)
+			node.child4.parent = rNode;
 
 		parent.child1 = lNode;
 		parent.child2 = rNode;
@@ -180,10 +188,18 @@ public class Tree234 extends IntDictionary {
 		Tree234Node lNode = new Tree234Node(parent, node.key1);
 		lNode.child1 = node.child1;
 		lNode.child2 = node.child2;
+		if(null != node.child1)
+			node.child1.parent = lNode;
+		if(null != node.child2)
+			node.child2.parent = lNode;
 
 		Tree234Node rNode = new Tree234Node(parent, node.key3);
 		rNode.child1 = node.child3;
 		rNode.child2 = node.child4;
+		if(null != node.child3)
+			node.child3.parent = rNode;
+		if(null != node.child4)
+			node.child4.parent = rNode;
 		//Compare and update key1, 2, 3 value, Ori parent must have one or two keys
 		//one key
 		if(1 == parent.keys) {
