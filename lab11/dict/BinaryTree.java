@@ -131,7 +131,19 @@ public class BinaryTree implements Dictionary {
 
   private BinaryTreeNode findHelper(Comparable key, BinaryTreeNode node) {
     // Replace the following line with your solution.
-    return null;
+	if(null == node) {
+		return null;
+	}
+
+	int rt = key.compareTo(node.entry.key());
+    if(0 == rt) {
+		return node;
+	} else if(rt < 0) {
+		return findHelper(key, node.leftChild);
+	} else {
+		//rt > 0
+		return findHelper(key, node.rightChild);
+	}
   }
 
   /** 
