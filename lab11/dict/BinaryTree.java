@@ -159,7 +159,63 @@ public class BinaryTree implements Dictionary {
    **/
   public Entry remove(Object key) {
     // Replace the following line with your solution.
-    return null;
+	BinaryTreeNode node = findHelper((Comparable) key, root);
+	Entry rt = null;
+
+	do{
+		if(null == node) {
+			break;
+		} else {
+		//Remove execution
+			//TODO: Consider the root case!!
+			// No child case
+			if(null == node.leftChild && null == node.rightChild && node != root) {
+				if(node.parent.leftChild == node) { 
+					node.parent.leftChild = null;
+				} else {
+					node.parent.rightChild = null;
+				}
+			} else if(null != node.leftChild && null == node.rightChild) {
+			// One child case
+				if(root != node) {
+					if(node.parent.leftChild == node) { 
+						node.parent.leftChild = node.leftChild;
+					} else {
+						node.parent.rightChild = node.leftChild;
+					}
+				} else {
+					root = node.leftChild;
+				}
+				
+				node.leftChild.parent = node.parent;
+				node.leftChild = null;
+			} else if(null == node.leftChild && null != node.rightChild) {
+			// One child case
+				if(root != node) {
+					if(node.parent.leftChild == node) { 
+						node.parent.leftChild = node.rightChild;
+					} else {
+						node.parent.rightChild = node.rightChild;
+					}
+				} else {
+					root = node.rightChild;
+				}
+				
+				node.rightChild.parent = node.parent;
+				node.rightChild = null;
+			} else if(null != node.leftChild && null != node.rightChild){
+			// Two children case
+			}
+			
+			node.parent = null;
+			rt = node.entry;
+			//node.entry = null;
+			//node = null;
+			size--;
+		}
+	} while(false);
+	
+    return rt;
   }
 
   /**
