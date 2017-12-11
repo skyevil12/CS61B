@@ -205,6 +205,31 @@ public class BinaryTree implements Dictionary {
 				node.rightChild = null;
 			} else if(null != node.leftChild && null != node.rightChild){
 			// Two children case
+				//find smallest (key)node in right child
+				BinaryTreeNode sNode = node.rightChild;
+				while(true) {
+					if(null != sNode.leftChild) {
+						sNode = sNode.leftChild;
+					} else {
+						break;
+					}
+				}
+				//remove the node, save the entry and link right child
+				Entry saved = sNode.entry;
+				if(sNode.parent.leftChild == sNode) { 
+					sNode.parent.leftChild = sNode.rightChild;
+				} else {
+					sNode.parent.rightChild = sNode.rightChild;
+				}
+				
+				//may not have right child, so check null
+				if(null != sNode.rightChild) {
+					sNode.rightChild.parent = sNode.parent;
+				}
+				sNode.rightChild = null;
+				
+				//replace target node in saved node
+				node.entry = saved;
 			}
 			
 			node.parent = null;
