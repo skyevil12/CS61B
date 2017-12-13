@@ -15,7 +15,19 @@ public class ListSorts {
    **/
   public static LinkedQueue makeQueueOfQueues(LinkedQueue q) {
     // Replace the following line with your solution.
-    return null;
+	LinkedQueue rt = new LinkedQueue();
+
+	try {
+		while(!q.isEmpty()) {
+			Object content = q.dequeue();
+			LinkedQueue contentQueue = new LinkedQueue();
+			contentQueue.enqueue(content);
+			rt.enqueue(contentQueue);
+		}
+	} catch(QueueEmptyException e) {
+		e.printStackTrace();
+	}
+    return rt;
   }
 
   /**
@@ -31,7 +43,27 @@ public class ListSorts {
    **/
   public static LinkedQueue mergeSortedQueues(LinkedQueue q1, LinkedQueue q2) {
     // Replace the following line with your solution.
-    return null;
+	LinkedQueue rt = new LinkedQueue();
+	// Loop to get individual object and stop when either queue empty
+	try {
+		while(true) {
+			Object obj1 = q1.isEmpty() ? null : q1.front();
+			Object obj2 = q2.isEmpty() ? null : q2.front();
+
+			if(null == obj1 && null == obj2) {
+				break;
+			} else if(null == obj1) {
+				while(!q2.isEmpty()) rt.enqueue(q2.dequeue());
+			} else if(null == obj2) {
+				while(!q1.isEmpty()) rt.enqueue(q1.dequeue());
+			} else {
+				rt.enqueue(((Comparable)obj1).compareTo((Comparable)obj2) <= 0 ? q1.dequeue() : q2.dequeue());
+			}
+		}
+	} catch(QueueEmptyException e) {
+		e.printStackTrace();
+	}
+    return rt;
   }
 
   /**
@@ -58,7 +90,23 @@ public class ListSorts {
    *  @param q is a LinkedQueue of Comparable objects.
    **/
   public static void mergeSort(LinkedQueue q) {
+	if(q.isEmpty()) {
+		return;
+	}
     // Your solution here.
+	LinkedQueue qoqs = makeQueueOfQueues(q);
+	try {
+		while(qoqs.size() > 1) {
+			LinkedQueue item1 = (LinkedQueue) qoqs.dequeue();
+			LinkedQueue item2 = (LinkedQueue) qoqs.dequeue();
+			qoqs.enqueue(mergeSortedQueues(item1, item2));
+		}
+
+		LinkedQueue rt = (LinkedQueue) qoqs.dequeue();
+		q.append(rt);
+	} catch(QueueEmptyException e) {
+		e.printStackTrace();
+	}
   }
 
   /**
