@@ -83,6 +83,25 @@ public class ListSorts {
                                LinkedQueue qSmall, LinkedQueue qEquals, 
                                LinkedQueue qLarge) {
     // Your solution here.
+	//Handle qIn empty case
+	int rt = 0;
+	Object contentObj = null;
+	try {
+		while(!qIn.isEmpty()) {
+			//Compare and fill three queue
+			contentObj = qIn.dequeue();
+			rt = ((Comparable)contentObj).compareTo(pivot);
+			if(rt < 0) {
+				qSmall.enqueue(contentObj);
+			} else if(rt > 0) {
+				qLarge.enqueue(contentObj);
+			} else {
+				qEquals.enqueue(contentObj);
+			}
+		}
+	} catch(QueueEmptyException e) {
+		e.printStackTrace();
+	}
   }
 
   /**
@@ -115,7 +134,39 @@ public class ListSorts {
    **/
   public static void quickSort(LinkedQueue q) {
     // Your solution here.
+	if(q.isEmpty() || 1 == q.size()) {
+		return;
+	}
+
+	sQueue = q;
+	quickSortInner(q);
   }
+
+  public static void quickSortInner(LinkedQueue q) {
+	if(q.isEmpty()) {
+		return;
+	}
+
+	//Base case
+	if(1 == q.size()) {
+		sQueue.append(q);
+		return;
+	}
+
+	//Random select pivot
+	int pivotIndex = (int)(Math.random() * q.size()) + 1;
+
+	//Recursive case
+	LinkedQueue qSmall = new LinkedQueue();
+	LinkedQueue qEquals = new LinkedQueue();
+    LinkedQueue qLarge = new LinkedQueue();
+	partition(q, (Comparable)q.nth(pivotIndex), qSmall, qEquals, qLarge);
+	quickSortInner(qSmall);
+	sQueue.append(qEquals);
+	quickSortInner(qLarge);
+  }
+
+  private static LinkedQueue sQueue = null;
 
   /**
    *  makeRandom() builds a LinkedQueue of the indicated size containing
@@ -136,10 +187,29 @@ public class ListSorts {
    *  cases.  Your test code will not be graded.
    **/
   public static void main(String [] args) {
-
-    LinkedQueue q = makeRandom(10);
+    LinkedQueue q = new LinkedQueue();
     System.out.println(q.toString());
     mergeSort(q);
+    System.out.println(q.toString());
+
+    q = makeRandom(1);
+    System.out.println(q.toString());
+    mergeSort(q);
+    System.out.println(q.toString());
+
+    q = makeRandom(10);
+    System.out.println(q.toString());
+    mergeSort(q);
+    System.out.println(q.toString());
+
+    q = new LinkedQueue();
+    System.out.println(q.toString());
+    quickSort(q);
+    System.out.println(q.toString());
+
+    q = makeRandom(1);
+    System.out.println(q.toString());
+    quickSort(q);
     System.out.println(q.toString());
 
     q = makeRandom(10);
