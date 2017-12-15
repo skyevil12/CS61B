@@ -6,16 +6,22 @@ Your Login:
 Part III.  Running time comparisons
 
   List size         mergesort             quicksort
-      100 
-    1,000
-   10,000
-  100,000
-1,000,000
+      100			0						0
+    1,000			0						0
+   10,000			16						16
+  100,000			62						110
+1,000,000			2251					924
+
+the unit is "msec"
 
 Part IV.
 
   Is mergesort stable?  
+  Ans: Stable
   Why or why not?
+  Ans: My merge sort would enqueue the first equal item, so that would not impact the order of equal items(ListSorts #61).
 
   Is quicksort stable?  
+  Ans: Stable
   Why or why not?
+  Ans: My quick sort would not change the order of equal items(ListSorts #167).

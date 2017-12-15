@@ -4,7 +4,7 @@ import list.*;
 
 public class ListSorts {
 
-  private final static int SORTSIZE = 1000;
+  private final static int SORTSIZE = 100;
 
   /**
    *  makeQueueOfQueues() makes a queue of queues, each containing one item
@@ -57,6 +57,8 @@ public class ListSorts {
 			} else if(null == obj2) {
 				while(!q1.isEmpty()) rt.enqueue(q1.dequeue());
 			} else {
+				//This is the key point why my merge sort is stable
+				//Because I would enqueue the first when compare result is equal
 				rt.enqueue(((Comparable)obj1).compareTo((Comparable)obj2) <= 0 ? q1.dequeue() : q2.dequeue());
 			}
 		}
@@ -162,6 +164,7 @@ public class ListSorts {
     LinkedQueue qLarge = new LinkedQueue();
 	partition(q, (Comparable)q.nth(pivotIndex), qSmall, qEquals, qLarge);
 	quickSortInner(qSmall);
+	//Since all equal items would be placed in order, so quick sort is stable
 	sQueue.append(qEquals);
 	quickSortInner(qLarge);
   }
@@ -187,7 +190,7 @@ public class ListSorts {
    *  cases.  Your test code will not be graded.
    **/
   public static void main(String [] args) {
-    LinkedQueue q = new LinkedQueue();
+    /*LinkedQueue q = new LinkedQueue();
     System.out.println(q.toString());
     mergeSort(q);
     System.out.println(q.toString());
@@ -195,14 +198,14 @@ public class ListSorts {
     q = makeRandom(1);
     System.out.println(q.toString());
     mergeSort(q);
-    System.out.println(q.toString());
+    System.out.println(q.toString());*/
 
-    q = makeRandom(10);
+    LinkedQueue q = makeRandom(10);
     System.out.println(q.toString());
     mergeSort(q);
     System.out.println(q.toString());
 
-    q = new LinkedQueue();
+    /*q = new LinkedQueue();
     System.out.println(q.toString());
     quickSort(q);
     System.out.println(q.toString());
@@ -210,30 +213,37 @@ public class ListSorts {
     q = makeRandom(1);
     System.out.println(q.toString());
     quickSort(q);
-    System.out.println(q.toString());
+    System.out.println(q.toString());*/
 
     q = makeRandom(10);
     System.out.println(q.toString());
     quickSort(q);
     System.out.println(q.toString());
 
-    /* Remove these comments for Part III.
-    Timer stopWatch = new Timer();
-    q = makeRandom(SORTSIZE);
-    stopWatch.start();
-    mergeSort(q);
-    stopWatch.stop();
-    System.out.println("Mergesort time, " + SORTSIZE + " Integers:  " +
-                       stopWatch.elapsed() + " msec.");
+    //Remove these comments for Part III.
+	int sortSize = SORTSIZE;
+	Timer stopWatch = new Timer();
+	while(true) {
+		if(sortSize > 1000000){
+			break;
+		}
+		stopWatch.reset();
+		q = makeRandom(sortSize);
+		stopWatch.start();
+		mergeSort(q);
+		stopWatch.stop();
+		System.out.println("Mergesort time, " + sortSize + " Integers:  " +
+						   stopWatch.elapsed() + " msec.");
 
-    stopWatch.reset();
-    q = makeRandom(SORTSIZE);
-    stopWatch.start();
-    quickSort(q);
-    stopWatch.stop();
-    System.out.println("Quicksort time, " + SORTSIZE + " Integers:  " +
-                       stopWatch.elapsed() + " msec.");
-    */
+		stopWatch.reset();
+		q = makeRandom(sortSize);
+		stopWatch.start();
+		quickSort(q);
+		stopWatch.stop();
+		System.out.println("Quicksort time, " + sortSize + " Integers:  " +
+						   stopWatch.elapsed() + " msec.");
+		sortSize*=10;
+	}
   }
 
 }
