@@ -1,0 +1,5 @@
+javac -g SortPerf.java
+java SortPerf select 5 175 200 select.dat
+java SortPerf insert 5 175 200 insert.dat
+java SortPerf merge 5 175 200 merge.dat
+java SortPerf quick 5 175 200 quick.dat

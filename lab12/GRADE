@@ -1,0 +1,13 @@
+PartI
+1. Quick sort
+2. Selection sort
+3. Merge sort
+4. Insertion sort
+
+Fatest 
+random data-> 1
+presorted data-> 4
+reversed sorted data-> 3
+
+Pivot is slected the half of the list/sublist
+Because the sort start as sorting the start half and end half part
